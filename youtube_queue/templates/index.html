@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}index{% endblock %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+{% endblock %}
+{% block content %}
+    <h1>Welcome {{ user.name }}</h1>
+    <div class="row view">
+        {% for item in navigation %}
+            <div class="col navigation-item">
+                <p><a href="{{ item.href }}">{{ item.caption }}</a></p>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+

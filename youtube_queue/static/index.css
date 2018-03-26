@@ -1,0 +1,23 @@
+.navigation-item {
+    background: #00ED5D;
+    border-radius: 10px;
+    margin: 3px;
+}
+
+.row {
+    text-align: center;
+}
+
+.navigation-item a {
+    color: #181413;
+    text-decoration: none;
+}
+
+.navigation-item a :hover {
+    text-decoration: none;
+}
+
+a, a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}

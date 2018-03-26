@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='room-creation.css') }}">
+{% endblock %}
+{% block title %}Room creation{% endblock %}
+{% block content %}
+
+    <div class="col align-self-center">
+        <form action="/room-creation" method="POST" id="login-form">
+            <h5>Room Name </h5><input type="text" name="name"><br/>
+            <h5>Password </h5><input type="password" name="password"><br />
+            <input type="submit" value="login" class="btn btn-default">
+        </form>
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endif %}
+    </div>
+
+{% endblock %}
