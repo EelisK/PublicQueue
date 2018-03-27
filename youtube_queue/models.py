@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import database_exists, create_database
 
 
@@ -17,7 +18,8 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     password = Column(String)
-    is_staff = Column(Boolean, default=False)
+    # admin property can be accessed via room class
+    rooms = relationship("User", backref="admin")
 
     def __repr__(self):
         return "<User(id='{}', name='{}', password='{}')>".format(self.id, self.name, self.password)

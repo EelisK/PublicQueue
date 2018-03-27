@@ -1,23 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!--<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>-->
+    <!--<script defer src="{{ url_for('static', filename='js/fontawesome-all.js') }}"></script>-->
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-social.css') }}">
+    <!-- Why won't this work...
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    ...but this does -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
     <title>{% block title %}{% endblock %} - playlist</title>
     {% block head %}
     {% endblock %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
 </head>
 <body>
-    <a href="/" class="btn btn-success btn-lg">Home</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <a class="navbar-brand" href="/">Home</a>
+        <!-- Login form -->
+        <!--<form class="form-inline" action="/login" method="POST">
+            <input type="text" class="form-control mr-sm-2" placeholder="Username" name="username">
+            <input type="password" class="form-control mr-sm-2" placeholder="Password" name="password">
+            <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Login">
+        </form>-->
+        <!-- Alternative -->
+        <a class="btn btn-social btn-google" href="/login"><i class="fa fa-youtube"></i>Sign in with YouTube</a>
+    </nav>
     <div class="container content">
         {% block content %}
         {# content block comes here  #}
         {% endblock %}
     </div>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
 </body>
 </html>
 

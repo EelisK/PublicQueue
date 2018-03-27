@@ -11,7 +11,5 @@ if __name__ == "__main__":
         if "local" in sys.argv:
             current_ip = "127.0.0.1"
         port = int(os.environ.get("PORT", default=5000))
-        if "debug" in sys.argv:
-            app.run(host=current_ip, port=port, debug=True)
-        else:
-            app.run(host=current_ip, port=port)
+        debug = "debug" in sys.argv
+        app.run(host=current_ip, port=port, debug=debug)
