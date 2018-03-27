@@ -1,43 +1,50 @@
 $(document).ready(function() {
-    // 1. This code loads the IFrame Player API code asynchronously.
-    /*var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    // 2. This function creates an <iframe> (and YouTube player)
-    //    after the API code downloads.
-    var player;
+    $("#que-appender").on("click", function() {
+        const input = $("#id-input").val();
+        console.log(input);
+        console.log(window.location.pathname);
+        $.ajax({
+            type: "POST",
+            url: window.location.pathname,
+            data: {
+                song_id: input
+            },
+            success: function(res) {
+                console.log(res);
+            },
+            dataType: "application/json"
+        });
+    });
+
+    let player;
     function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-            height: '390',
-            width: '640',
-            videoId: 'M7lc1UVf-VE',
-            events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
-            }
+      player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: 'M7lc1UVf-VE',
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
       });
     }
-    // 3. Api calls this function when it is ready
-    function onPlayerReady(event) {
-        event.target.playVideo();
-    }
 
-    // 4. The API calls this function when the player's state changes.
-    //    The function indicates that when playing a video (state=1),
-    //    the player should play for six seconds and then stop.
-
-    var done = false;
     function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-            setTimeout(stopVideo, 6000);
-            done = true;
+        if (event.data === YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
       }
-    }
-    function stopVideo() {
+      function stopVideo() {
         player.stopVideo();
-    }*/
+      }
 
+
+    function queVideo(videoId) {
+        let suggestedQuality = "144p";
+        let startSeconds = 0;
+        player.cueVideoById(videoId, startSeconds, suggestedQuality);
+    }
 
 });
