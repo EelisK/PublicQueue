@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os, sys, socket
-from youtube_queue.app import app
-from youtube_queue.models import Base, engine
+from public_queue.app import app
+from public_queue.models import Base, engine
 
 if __name__ == "__main__":
     if "reset" in sys.argv:

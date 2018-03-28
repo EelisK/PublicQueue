@@ -3,8 +3,8 @@ from flask import Flask, request, render_template, \
 from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import sessionmaker
 from hashlib import sha256
-from youtube_queue.models import Room, engine, Song, User
-from youtube_queue.secret_keys import secret_key, wtf_csrf_secret_key
+from public_queue.models import Room, engine, Song, User
+from public_queue.secret_keys import secret_key, wtf_csrf_secret_key
 
 
 app = Flask(__name__)
