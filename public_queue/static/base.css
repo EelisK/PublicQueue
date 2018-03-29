@@ -10,13 +10,13 @@ body {
 }
 
 @keyframes contenthover {
-    from {box-shadow: 0 5px 15px #000;}
+    from {box-shadow: 0 0 0 #000;}
     to {box-shadow: 0 0 30px #000;}
 }
 
 @keyframes contentnothover {
     from {box-shadow: 0 0 30px #000;}
-    to {box-shadow: 0 5px 15px #000;}
+    to {box-shadow: 0 0 0 #000;}
 }
 
 .content {
@@ -28,7 +28,7 @@ body {
     background-color: var(--black);
     top: 2.5%;
     left: 15%;
-    box-shadow: 0 5px 15px #000;
+    box-shadow: 0 0 0 #000;
     opacity: 1;
     animation-name: contentnothover;
     animation-duration: 0.4s;

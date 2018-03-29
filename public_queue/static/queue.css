@@ -1,3 +1,3 @@
-#player {
-    display: none;
+.song-button:hover {
+    background: #00ed5d;
 }

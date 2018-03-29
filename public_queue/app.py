@@ -1,11 +1,12 @@
 from flask import Flask, request, render_template, \
-    redirect, url_for, flash
+    redirect, url_for, flash, jsonify, json
 from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import sessionmaker
 from hashlib import sha256
 from public_queue.models import Room, engine, Song, User
 from public_queue.secret_keys import secret_key, wtf_csrf_secret_key
-
+import builtins
+import sqlalchemy
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -47,7 +48,7 @@ def room_login():
         real_password = session.query(Room.password).filter(Room.name == name).first()[0]
         print("{}".format(real_password))
         print("{}".format(password))
-        if name in map(lambda name: name[0], session.query(Room.name).all()) and password == real_password:
+        if name in map(lambda n: n[0], session.query(Room.name).all()) and password == real_password:
             return redirect("rooms/{}".format(name))
         error = "Invalid password."
     return render_template("login.html", error=error, rooms=get_rooms())
@@ -55,14 +56,40 @@ def room_login():
 
 @app.route("/rooms/<name>", methods=["POST", "GET"])
 def room(name=None):
-    # TODO: add song to queue
     if request.method == "POST":
         song_id = request.form.get("song_id")
         if song_id is None:
-            return  # redirect("/rooms/{}".format(name))
+            # Here we got a response to our response
+            pass
+        else:
+            session = Session()
+            song = Song(song_id=song_id, name="Darude sandstorm")
+            try:
+                session.add(song)
+                session.commit()
+                data = "success"
+                response = app.response_class(
+                    response=data,  # json.dumps(data),
+                    status=200,
+                    mimetype="application/json"
+                )
+                return response
+            except (builtins.TypeError, sqlalchemy.exc.IntegrityError) as e:
+                print(e)
+                data = "fail"
+                response = app.response_class(
+                    response=data,  # json.dumps(data),
+                    status=200,
+                    mimetype="application/json"
+                )
+                return response
+    room = next(r for r in get_rooms() if r.name == name)
+    return render_template("room.html", room=room, songs=room.queue)
 
-    room = next(room for room in get_rooms() if room.name == name)
-    return render_template("room.html", room=room)
+
+@app.route("/rooms/<name>/admin", methods=["POST", "GET"])
+def admin_page(name=None):
+    pass
 
 
 @app.route("/room-creation", methods=["POST", "GET"])

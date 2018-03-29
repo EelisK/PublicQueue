@@ -1,18 +1,31 @@
 {% extends 'base.html' %}
 {% block head %}
     <script src="{{ url_for('static', filename='queue.js') }}"></script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+    <script src="http://www.youtube.com/player_api" type="text/javascript"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='queue.css') }}">
+    <!--<meta http-equiv="refresh" content="5" >-->
 {% endblock %}
 {% block title %}room {{ name }}{% endblock %}
 {% block content %}
 
     <h1>Room {{room.name}}</h1>
 
-    <div class="input-group mb-3">
+    <!--<div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="song id" id="id-input">
         <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="button" id="que-appender">Add song</button>
         </div>
+    </div>-->
+
+    <form class="input-group mb-3" id="search-form">
+        <input type="text" class="form-control" placeholder="search" id="search-key">
+        <div class="input-group-append">
+            <input class="btn btn-outline-success" type="submit" id="form-submit" value="Search">
+        </div>
+    </form>
+
+    <div id="search-results" class="list-group">
     </div>
 
     <ol>
@@ -22,5 +35,4 @@
             <li>No songs in queue</li>
         {% endfor %}
     </ol>
-    <div id="player"></div>
 {% endblock %}

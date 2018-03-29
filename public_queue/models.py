@@ -33,7 +33,7 @@ class Room(Base):
 
     name = Column(String, primary_key=True)
     password = Column(String)
-    queue = relationship("SongAssociation")
+    queue = relationship("Song", back_populates="room")
 
     def __repr__(self):
         return "<Room(name='{}', password='{}')>".format(self.name, self.password)
@@ -46,15 +46,11 @@ class Song(Base):
     """
     __tablename__ = "songs"
 
-    song_id = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    song_id = Column(String)
     name = Column(String)
-
-
-class SongAssociation(Base):
-    __tablename__ = "songassociation"
-
-    song_id = Column(String, ForeignKey("songs.song_id"), primary_key=True)
-    name = Column(String, ForeignKey("rooms.name"), primary_key=True)  # Room name
+    room = relationship("Room", back_populates="queue")
+    room_name = Column(String, ForeignKey("rooms.name"))
 
 
 class AdminAssociation(Base):
