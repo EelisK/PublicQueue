@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block head %}
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+    <script src="http://www.youtube.com/player_api" type="text/javascript"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <!--<meta http-equiv="refresh" content="5" >-->
+{% endblock %}
+{% block title %}room {{ room.name }}{% endblock %}
+{% block content %}
+
+    <h1>Room {{room.name}}</h1>
+
+    <!-- FOR CONTROLLING THE AUDIO -->
+    <div class="btn-group">
+        <button class="btn btn-inverse green"><i class="fa fa-fast-backward"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-backward"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-stop"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-play"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-pause"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-forward"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-fast-forward"></i></button>
+    </div>
+
+    <div id="song-list-container">
+        <div class="list-group" id="song-list">
+            {% for song in songs %}
+                <div class="list-group-item list-group-item-action">
+                        <span class="text-center">{{ song.name }}</span>
+                    <button class="remove-button btn btn-foursquare float-right" id="{{ song.song_id }}">X</button>
+                    <!--<iframe class="video w-100" style="display: none;"
+                                src="//youtube.com/embed/{{ song.song_id }}" frameborder="0">
+                    </iframe>-->
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
