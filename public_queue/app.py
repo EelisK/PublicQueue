@@ -26,8 +26,6 @@ def get_rooms():
 def insert_room(name, password):
     password = sha256(password.encode("ascii")).hexdigest()
     session = Session()
-    for elem in session.query(Room.name).all():
-        print(elem)
     if name in map(lambda n: n[0], session.query(Room.name).all()):
         return False
     room = Room(name=name, password=password)
@@ -56,16 +54,19 @@ def room_login():
 
 @app.route("/rooms/<name>", methods=["POST", "GET"])
 def room(name=None):
+    session = Session()
+    room = next(r for r in session.query(Room).all() if r.name == name)
     if request.method == "POST":
         song_id = request.form.get("song_id")
+        song_name = request.form.get("song_name")
         if song_id is None:
             # Here we got a response to our response
             pass
         else:
-            session = Session()
-            song = Song(song_id=song_id, name="Darude sandstorm")
+            song = Song(song_id=song_id, name=song_name)
             try:
                 session.add(song)
+                room.queue.append(song)
                 session.commit()
                 data = "success"
                 response = app.response_class(
@@ -83,13 +84,27 @@ def room(name=None):
                     mimetype="application/json"
                 )
                 return response
-    room = next(r for r in get_rooms() if r.name == name)
     return render_template("room.html", room=room, songs=room.queue)
 
 
 @app.route("/rooms/<name>/admin", methods=["POST", "GET"])
 def admin_page(name=None):
-    pass
+    room = next(r for r in get_rooms() if r.name == name)
+    return render_template("admin.html", room=room, songs=room.queue)
+
+
+@app.route("/rooms/<name>/admin/delete/<song_id>", methods=["POST"])
+def delete_song(name=None, song_id=None):
+    session = Session()
+    room = next(r for r in session.query(Room.name).all() if r.name == name)
+    song = session.query(Song).filter(Song.song_id == song_id and Song.room == room)
+    song = next(s for s in song.all())
+    print(song)
+    session.delete(song)
+    session.commit()
+    return jsonify(response="song deleted")
+    # song = session.query(Song).filter(Song.room == room and Song.song_id == song_id).all()
+    # session.delete(song)
 
 
 @app.route("/room-creation", methods=["POST", "GET"])
@@ -112,15 +127,10 @@ def create_room():
 @app.route("/")
 def index():
     error = request.args.get("error")
-    navigation = []
-    navigation.append({"caption": "log in to a room", "href": "/rooms"})
-    navigation.append({"caption": "create a room", "href": "/room-creation"})
-    user = {}
+    user = None
     if current_user.is_authenticated: 
-        user["name"] = current_user.username
-    else: 
-        user["name"] = ""
-    return render_template("index.html", user=user, navigation=navigation, error=error)
+        user = current_user
+    return render_template("index.html", user=user, error=error)
 
 
 @app.route("/login", methods=["POST", "GET"])
