@@ -1,0 +1,4 @@
+.img-outline {
+    margin-top: 20px;
+    background: radial-gradient(circle, var(--green) 15%, var(--black) 73%);
+}

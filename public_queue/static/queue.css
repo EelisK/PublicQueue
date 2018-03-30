@@ -1,3 +1,27 @@
 .song-button:hover {
     background: #00ed5d;
 }
+
+.list-group-item {
+    color: var(--black);
+}
+
+.list-group-item-custom {
+    background: #00d8e6;
+    counter-increment: step-counter;
+}
+
+.list-group-item-custom::before {
+    content: counter(step-counter);
+    font-size: 80%;
+    background-color: var(--green);
+    color: #fff;
+    font-weight: bold;
+    padding: 3px 9px;
+    border-radius: 3px;
+    float: left;
+}
+
+.song-list-container {
+    margin: 20px 0;
+}

@@ -26,7 +26,9 @@ $(document).ready(function() {
     $("#search-form").on("submit", function(e) {
         e.preventDefault();
         //Prepare request
-        let query = encodeURIComponent($("#search-key").val());
+        const key = $("#search-key");
+        let query = encodeURIComponent(key.val());
+        key.val("");  // clear input after search
         console.log("Query:");
         console.log(query);
         let request = gapi.client.youtube.search.list({
@@ -44,20 +46,46 @@ $(document).ready(function() {
             console.log(response);
             $("#search-results").empty();
             $.each(result.items, function(index, item) {
-                $("#search-results").append("<button class='song-button list-group-item list-group-item-action' type='button' id='" +
-                    item["id"]["videoId"] + "'>" + item["snippet"]["title"] + "" + "</button>");
                 console.log(item);
+                const classes = "song-button list-group-item list-group-item-action";
+                $("#search-results").append("<button class='"+classes+"' type='button' id='" +
+                    item["id"]["videoId"] + "'>" + item["snippet"]["title"] + "" + "</button>");
+                //const thumbnail = item["snippet"]["thumbnails"]["default"]["url"];
+                //console.log(thumbnail);
+                //$("#"+item["id"]["videoId"]).css("background-image: url('" + thumbnail + "');");
             });
             $(".song-button").on("click", function(evt) {
                 evt.preventDefault();
                 const songId = this.id;
-                console.log(songId);
-                //TODO: append song with id to queue
+                const songName = this.innerHTML;
+                $.ajax({
+                    type: "POST",
+                    url: window.location.pathname,
+                    data: {
+                        song_id: songId,
+                        song_name: songName
+                    },
+                    success: function(data) {
+                        handleResponse(data);
+                    },
+                    error: function(data) {
+                        handleResponse(data);
+                    },
+                    dataType: "application/json"
+                });
+                $("#song-list-container").load(location.href + " #song-list");
                 $("#search-results").empty();
-            })
-
+            });
         });
     });
+
+    function handleResponse(data) {
+        console.log(data);
+    }
+
+    setInterval(function() {
+        $("#song-list-container").load(location.href + " #song-list");
+    }, 5000/*refresh every 5 seconds*/);
 
     /*$("#que-appender").on("click", function() {
         const input = $("#id-input").val();
@@ -76,21 +104,14 @@ $(document).ready(function() {
             },
             dataType: "application/json"
         });
-    });
-
-    function handleResponse(data) {
-        if(data["responseText"] === "success") {
-            console.log("success");
-        } else {
-            console.log("Fail");
-        }
-    }*/
+    });*/
 
 });
 
 function init() {
-    gapi.client.setApiKey("secrets");
+    gapi.client.setApiKey("AIzaSyDkkNJHGrVQo6D95PeAfhLrf0lTqGKWmIE");
     gapi.client.load("youtube", "v3", function() {
         console.log("api is ready");
+        $("#search-key").prop("disabled", false);
     });
 }

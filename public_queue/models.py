@@ -33,7 +33,7 @@ class Room(Base):
 
     name = Column(String, primary_key=True)
     password = Column(String)
-    queue = relationship("Song", back_populates="room")
+    queue = relationship("Song", back_populates="room", cascade="all, delete-orphan")
 
     def __repr__(self):
         return "<Room(name='{}', password='{}')>".format(self.name, self.password)

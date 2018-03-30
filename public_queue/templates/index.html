@@ -5,17 +5,24 @@
 {% endblock %}
 {% block content %}
     <h1>Welcome {{ user.name }}</h1>
-    <div class="row view">
-        {% for item in navigation %}
-            <div class="col navigation-item">
-                <p><a href="{{ item.href }}">{{ item.caption }}</a></p>
-            </div>
-        {% endfor %}
+        <div class="row view">
+            <a class="card bg-dark text-white" href="/rooms">
+                <img class="card-img" src="https://images.pexels.com/photos/34407/pexels-photo.jpg" alt="Card image">
+                <div class="card-img-overlay">
+                    <h3 class="card-title">Room login</h3>
+                    <!--<p class="card-text">Select a room and log in to it.</p>-->
+                </div>
+            </a>
+            <a class="card bg-dark text-white" href="/room-creation">
+                <img class="card-img" src="https://images.pexels.com/photos/97077/pexels-photo-97077.jpeg" alt="Card image">
+                <div class="card-img-overlay">
+                    <h3 class="card-title">Create a room</h3>
+                    <!--<p class="card-text">Click here to create a room.</p>-->
+                </div>
+            </a>
         </div>
         {% if error %}
             <div class="alert alert-danger" role="alert">{{ error }}</div>
         {% endif %}
-    </div>
-
 {% endblock %}
 
