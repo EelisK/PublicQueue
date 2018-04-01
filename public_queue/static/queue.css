@@ -22,6 +22,7 @@
     float: left;
 }
 
-.song-list-container {
-    margin: 20px 0;
+#song-list-container {
+    padding-bottom: 20px;
 }
+

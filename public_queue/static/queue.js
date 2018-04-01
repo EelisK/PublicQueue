@@ -23,6 +23,39 @@ $(document).ready(function() {
         player.cueVideoById(videoId, startSeconds, suggestedQuality);
     }*/
 
+    $(document).on("click", ".song-button",function(evt) {
+        evt.preventDefault();
+        const songId = this.id;
+        const songName = this.innerHTML;
+        $.ajax({
+            type: "POST",
+            url: window.location.pathname,
+            data: {
+                song_id: songId,
+                song_name: songName
+            },
+            success: function(data) {
+                console.log("SUCCESS");
+                handleResponse(data);
+            },
+            error: function(data) {
+                console.log("ERROR");
+                handleResponse(data);
+            },
+            finally: function(data) {
+                console.log("FINALLY");
+                handleResponse(data);
+            },
+            dataType: "application/json"
+        });
+        const dT = 600;
+        $("#search-results").animate({height: 0, paddingBottom: 0}, {duration: dT});
+        setTimeout(() => {
+            $("#search-results").empty();
+            $("#song-list-container").load(location.href + " #song-list");
+        }, dT);
+    });
+
     $("#search-form").on("submit", function(e) {
         e.preventDefault();
         //Prepare request
@@ -31,51 +64,33 @@ $(document).ready(function() {
         key.val("");  // clear input after search
         console.log("Query:");
         console.log(query);
-        let request = gapi.client.youtube.search.list({
+        $("#search-results").empty();
+        const request = gapi.client.youtube.search.list({
             part: "snippet",
             type: "video",
             q: query,
             maxResults: 5, /*5 is default anyways*/
             order: "relevance",
-            videoCategoryId: 10, /*10 is music according to this resource:
+            videoCategoryId: 10, /*10 is music according to this source:
             https://gist.github.com/dgp/1b24bf2961521bd75d6c*/
         });
         //Make the request
         request.execute(function(response) {
+            const searchResults = $("#search-results");
+            searchResults.css("paddingBottom", "12px");
             let result = response.result;
             console.log(response);
-            $("#search-results").empty();
             $.each(result.items, function(index, item) {
                 console.log(item);
                 const classes = "song-button list-group-item list-group-item-action";
-                $("#search-results").append("<button class='"+classes+"' type='button' id='" +
+                const elem = $("<button class='"+classes+"' type='button' id='" +
                     item["id"]["videoId"] + "'>" + item["snippet"]["title"] + "" + "</button>");
+                searchResults.append(elem);
                 //const thumbnail = item["snippet"]["thumbnails"]["default"]["url"];
                 //console.log(thumbnail);
                 //$("#"+item["id"]["videoId"]).css("background-image: url('" + thumbnail + "');");
             });
-            $(".song-button").on("click", function(evt) {
-                evt.preventDefault();
-                const songId = this.id;
-                const songName = this.innerHTML;
-                $.ajax({
-                    type: "POST",
-                    url: window.location.pathname,
-                    data: {
-                        song_id: songId,
-                        song_name: songName
-                    },
-                    success: function(data) {
-                        handleResponse(data);
-                    },
-                    error: function(data) {
-                        handleResponse(data);
-                    },
-                    dataType: "application/json"
-                });
-                $("#song-list-container").load(location.href + " #song-list");
-                $("#search-results").empty();
-            });
+            searchResults.css("height", "100%");
         });
     });
 
@@ -83,28 +98,10 @@ $(document).ready(function() {
         console.log(data);
     }
 
+    /*refresh every 5 seconds*/
     setInterval(function() {
         $("#song-list-container").load(location.href + " #song-list");
-    }, 5000/*refresh every 5 seconds*/);
-
-    /*$("#que-appender").on("click", function() {
-        const input = $("#id-input").val();
-        queVideo(input);
-        $.ajax({
-            type: "POST",
-            url: window.location.pathname,
-            data: {
-                song_id: input
-            },
-            success: function(data) {
-                handleResponse(data);
-            },
-            error: function(data) {
-                handleResponse(data);
-            },
-            dataType: "application/json"
-        });
-    });*/
+    }, 5000);
 
 });
 

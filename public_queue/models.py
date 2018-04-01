@@ -1,13 +1,14 @@
-from sqlalchemy import create_engine, Column, Integer, String, Table, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy.sql import func
 
 
 Base = declarative_base()
 
 # sqlite:///relative/path/to/file.db
-engine = create_engine("sqlite:///database.db", echo=True)
+engine = create_engine("sqlite:///database.db", echo=False)
 if not database_exists(engine.url):
     create_database(engine.url)
 
@@ -49,6 +50,7 @@ class Song(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     song_id = Column(String)
     name = Column(String)
+    added = Column(DateTime(timezone=True), default=func.now())
     room = relationship("Room", back_populates="queue")
     room_name = Column(String, ForeignKey("rooms.name"))
 

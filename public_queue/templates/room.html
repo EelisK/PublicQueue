@@ -9,7 +9,12 @@
 {% block title %}room {{ room.name }}{% endblock %}
 {% block content %}
 
-    <h1>Room {{room.name}}</h1>
+    <div>
+        <div class="float-right align-top">
+            <a href="/rooms/{{ room.name }}/admin"><span class="fa fa-user-secret"></span></a>
+        </div>
+        <h1 class="float-left">Room {{room.name}}</h1>
+    </div>
 
     <form class="input-group mb-3" id="search-form">
         <input type="text" class="form-control" placeholder="search" id="search-key" disabled>
@@ -30,10 +35,6 @@
             {% endfor %}
         </ol>
     </div>
-
-    <span class="float-right align-text-bottom">
-        <a href="/rooms/{{ room.name }}/admin">Admin page</a>
-    </span>
 
 
 {% endblock %}

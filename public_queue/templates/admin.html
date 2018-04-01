@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% block head %}
-    <script src="{{ url_for('static', filename='admin.js') }}"></script>
     <script src="http://www.youtube.com/player_api" type="text/javascript"></script>
+    <script src="https://apis.google.com/js/client.js?onload=onYoutubeAPIReady"></script>
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
     <!--<meta http-equiv="refresh" content="5" >-->
 {% endblock %}
@@ -12,24 +13,78 @@
 
     <!-- FOR CONTROLLING THE AUDIO -->
     <div class="btn-group">
-        <button class="btn btn-inverse green"><i class="fa fa-fast-backward"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-backward"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-stop"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-play"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-pause"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-forward"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-fast-forward"></i></button>
+        <button class="btn btn-inverse green" id="backward-button"><i class="fa fa-backward"></i></button>
+        <button class="btn btn-inverse green" id="play-button" disabled is_play="true"><i class="fa fa-pause"></i></button>
+        <button class="btn btn-inverse green" id="forward-button"><i class="fa fa-forward"></i></button>
+        <!--<button class="btn btn-inverse green"><i class="fa fa-fast-backward"></i></button>
+        <button class="btn btn-inverse green" id="stop-button"><i class="fa fa-stop"></i></button>
+        <button class="btn btn-inverse green" id="play-button"><i class="fa fa-play"></i></button>
+        <button class="btn btn-inverse green"><i class="fa fa-fast-forward"></i></button>-->
     </div>
+
+    <div id="player-container">
+        <div id="player">
+        </div>
+    </div>
+
+    <script>
+        // create youtube player
+        let player;
+        function onYouTubePlayerAPIReady() {
+            const id = "{{ first_id }}";
+            player = new YT.Player('player', {
+              width: '640',
+              height: '390',
+              videoId: id,
+              events: {
+                onReady: onPlayerReady,
+                onStateChange: onPlayerStateChange
+              }
+            });
+        }
+
+        // autoplay video
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        // when video ends
+        function onPlayerStateChange(event) {
+            console.log(event);
+            if(event.data === 0){
+                const elem = $(".remove-button").first();
+                const id = elem.attr("song_id");
+                const songId = elem.attr("db_id");
+                const url = window.location.pathname + "/delete/" + songId;
+                console.log("id: " + id + " songId " + songId);
+                console.log(url);
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        id: id
+                    },
+                    dataType: "application/json"
+                }).always(function (res) {
+                    const response = JSON.parse(res.responseText);
+                    console.log(response);
+                    player.loadVideoById(response.response);
+                });
+            }
+        }
+    </script>
 
     <div id="song-list-container">
         <div class="list-group" id="song-list">
             {% for song in songs %}
                 <div class="list-group-item list-group-item-action">
                         <span class="text-center">{{ song.name }}</span>
-                    <button class="remove-button btn btn-foursquare float-right" id="{{ song.song_id }}">X</button>
-                    <!--<iframe class="video w-100" style="display: none;"
-                                src="//youtube.com/embed/{{ song.song_id }}" frameborder="0">
-                    </iframe>-->
+                    <button class="remove-button btn btn-foursquare float-right"
+                            db_id="{{ song.song_id }}" song_id="{{ song.id }}">X</button>
+                </div>
+            {% else %}
+                <div class="list-group-item list-group-item-info list-group-item-custom">
+                        <span class="text-center">No songs in queue.</span>
                 </div>
             {% endfor %}
         </div>

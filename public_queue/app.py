@@ -90,19 +90,28 @@ def room(name=None):
 @app.route("/rooms/<name>/admin", methods=["POST", "GET"])
 def admin_page(name=None):
     room = next(r for r in get_rooms() if r.name == name)
-    return render_template("admin.html", room=room, songs=room.queue)
+    first_id = None
+    if len(room.queue) > 0:
+        first_id = room.queue[0].song_id
+    return render_template("admin.html", room=room, songs=room.queue, first_id=first_id)
 
 
 @app.route("/rooms/<name>/admin/delete/<song_id>", methods=["POST"])
 def delete_song(name=None, song_id=None):
     session = Session()
+    id = request.form.get("id")
+    print("\nid: {}\n".format(id))
     room = next(r for r in session.query(Room.name).all() if r.name == name)
-    song = session.query(Song).filter(Song.song_id == song_id and Song.room == room)
+    song = session.query(Song).filter(Song.song_id == song_id and Song.room == room and Song.id == id)
     song = next(s for s in song.all())
     print(song)
     session.delete(song)
     session.commit()
-    return jsonify(response="song deleted")
+    try:
+        next_id = (next(r for r in session.query(Room).all() if r.name == name)).queue[0].song_id
+    except IndexError:
+        next_id = None
+    return jsonify(response=next_id)
     # song = session.query(Song).filter(Song.room == room and Song.song_id == song_id).all()
     # session.delete(song)
 

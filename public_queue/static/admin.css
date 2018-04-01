@@ -4,4 +4,15 @@
 
 #song-list-container {
     margin: 20px 0;
+    padding-bottom: 30px;
+}
+
+#player {
+    /*Should not be displayed or
+     *controlled via iFrame*/
+    display: block;/*none*/
+}
+
+#player-container {
+    display: none;
 }
