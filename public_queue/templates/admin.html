@@ -9,12 +9,12 @@
 {% block title %}room {{ room.name }}{% endblock %}
 {% block content %}
 
-    <h1>Room {{room.name}}</h1>
+    <h1 class="room-name">Room {{room.name}}</h1>
 
     <!-- FOR CONTROLLING THE AUDIO -->
     <div class="btn-group">
         <button class="btn btn-inverse green" id="backward-button"><i class="fa fa-backward"></i></button>
-        <button class="btn btn-inverse green" id="play-button" disabled is_play="true"><i class="fa fa-pause"></i></button>
+        <button class="btn btn-inverse green" id="play-button" is_play="true"><i class="fa fa-pause"></i></button>
         <button class="btn btn-inverse green" id="forward-button"><i class="fa fa-forward"></i></button>
         <!--<button class="btn btn-inverse green"><i class="fa fa-fast-backward"></i></button>
         <button class="btn btn-inverse green" id="stop-button"><i class="fa fa-stop"></i></button>
@@ -69,6 +69,7 @@
                     const response = JSON.parse(res.responseText);
                     console.log(response);
                     player.loadVideoById(response.response);
+                    player.playVideo();
                 });
             }
         }

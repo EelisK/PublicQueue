@@ -139,7 +139,7 @@ def index():
     user = None
     if current_user.is_authenticated: 
         user = current_user
-    return render_template("index.html", user=user, error=error)
+    return render_template("index.html", user=user, error=error, rooms=get_rooms())
 
 
 @app.route("/login", methods=["POST", "GET"])

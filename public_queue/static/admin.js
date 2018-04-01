@@ -27,6 +27,7 @@ $(document).ready(function() {
     });
     $("#forward-button").on("click", function(e) {
        e.preventDefault();
+       $("")
     });
     $("#play-button").on("click", function(e) {
        e.preventDefault();

@@ -16,3 +16,8 @@
 #player-container {
     display: none;
 }
+
+.btn.green {
+    width: 100px;
+    height: 100px;
+}
