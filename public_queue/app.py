@@ -1,10 +1,11 @@
 from flask import Flask, request, render_template, \
-    redirect, url_for, flash, jsonify, json
+    redirect, url_for, flash, jsonify, json, make_response
 from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import sessionmaker
 from hashlib import sha256
 from public_queue.models import Room, engine, Song, User
 from public_queue.secret_keys import secret_key, wtf_csrf_secret_key
+from public_queue import session_manager
 import builtins
 import sqlalchemy
 
@@ -27,12 +28,12 @@ def insert_room(name, password):
     password = sha256(password.encode("ascii")).hexdigest()
     session = Session()
     if name in map(lambda n: n[0], session.query(Room.name).all()):
-        return False
+        return False, None
     room = Room(name=name, password=password)
     session.add(room)
     session.commit()
     print("New Room instance added to our database")
-    return True
+    return True, room
 
 
 @app.route("/rooms", methods=["GET", "POST"])
@@ -47,7 +48,12 @@ def room_login():
         print("{}".format(real_password))
         print("{}".format(password))
         if name in map(lambda n: n[0], session.query(Room.name).all()) and password == real_password:
-            return redirect("rooms/{}".format(name))
+            # Set user cookie
+            response = make_response(redirect("rooms/{}".format(name)))
+            room = session.query(Room).filter(Room.name == name)[0]
+            cookie = session_manager.get_cookie_matching_room(room)
+            response = session_manager.add_cookie_to_response(response, cookie)
+            return response
         error = "Invalid password."
     return render_template("login.html", error=error, rooms=get_rooms())
 
@@ -55,7 +61,16 @@ def room_login():
 @app.route("/rooms/<name>", methods=["POST", "GET"])
 def room(name=None):
     session = Session()
-    room = next(r for r in session.query(Room).all() if r.name == name)
+    try:
+        room = next(r for r in session.query(Room).all() if r.name == name)
+    except StopIteration:
+        return render_template("404.html")
+
+    cookie = session_manager.get_cookie_matching_room(room)
+    # Check that user has already logged in by looking at their cookies
+    if cookie["name"] not in request.cookies or cookie["value"] != request.cookies.get(cookie["name"]):
+        return redirect(url_for("room_login", error="You need to log in before you can enter a room"))
+
     if request.method == "POST":
         song_id = request.form.get("song_id")
         song_name = request.form.get("song_name")
@@ -121,16 +136,22 @@ def create_room():
     if request.method == "POST":
         name = request.form.get("name")
         password = request.form.get("password")
+        if " " in name or "\t" in name or "\n" in name:
+            return render_template("room-creation.html", error="Room name cannot contain spaces.")
         # If insert is successful redirect to room url
-        if insert_room(name, password):
-            return redirect("/rooms/{}".format(name))
+        insert_successful, room = insert_room(name, password)
+        if insert_successful:
+            response = make_response(redirect("/rooms/{}".format(name)))
+            cookie = session_manager.get_cookie_matching_room(room)
+            response = session_manager.add_cookie_to_response(response, cookie)
+            return response
         else:
             return render_template("room-creation.html", error="Room with that name exists already.")
     else:
         if current_user.is_authenticated or True:
             return render_template("room-creation.html")
         else:
-            return redirect(url_for(".index", error="Login required to create rooms."))
+            return redirect(url_for("index", error="Login required to create rooms."))
 
 
 @app.route("/")
@@ -148,7 +169,7 @@ def user_login():
         username = request.form.get("username")
         password = request.form.get("password")
         if password is not None and username is not None:
-            password = sha256(password.encode("ascii")).hexdigest()
+            password = sha256(password.encode("utf-8")).hexdigest()
             session = Session()
             try:
                 actual_user = session.query(User).filter(User.name == username)[0]
@@ -171,7 +192,7 @@ def register():
     print(password_confirmation)
     print(username)
     if password is not None and password == password_confirmation and len(password) > 3:
-        encoded_password = sha256(password.encode("ascii")).hexdigest()
+        encoded_password = sha256(password.encode("utf-8")).hexdigest()
         session = Session()
         if username in map(lambda name: name[0], session.query(User.name).all()):
             error += "User with that name already exists. "
@@ -191,3 +212,4 @@ def register():
 @login_manager.user_loader
 def user_loader(user_id):
     pass
+

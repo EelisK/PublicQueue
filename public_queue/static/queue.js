@@ -1,28 +1,5 @@
 $(document).ready(function() {
 
-
-    /*const player = window.YT.Player("music_player", {
-        width: "768",
-        height: "432",
-        videoId: "4LfJnj66HVQ",
-        events: {
-            "onReady": function(event) {
-                console.log("Ready");
-                console.log(event);
-            },
-            "onStateChange": function(event) {
-                console.log("StateChange");
-                console.log(event);
-            }
-        }
-    });
-
-    function queVideo(videoId) {
-        let suggestedQuality = "144p";
-        let startSeconds = 0;
-        player.cueVideoById(videoId, startSeconds, suggestedQuality);
-    }*/
-
     $("#form-clear").on("click", function(evt) {
         evt.preventDefault();
         $("#search-key").val("");
