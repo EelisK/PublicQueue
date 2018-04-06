@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='base.js') }}"></script>
     <!--<script defer src="{{ url_for('static', filename='js/fontawesome-all.js') }}"></script>-->
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
@@ -13,6 +14,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
     ...but this does -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Cookie consent -->
+    <script id="cookie-consent-script" type="text/javascript" src="https://cdn.jsdelivr.net/npm/cookie-bar/cookiebar-latest.min.js"></script>
     
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
 
@@ -21,22 +25,64 @@
     {% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-custom">
-        <a class="navbar-brand" href="/" id="login-link"><span class="fa fa-home"></span></a>
-        <!-- Login form -->
-        <!--<form class="form-inline" action="/login" method="POST">
-            <input type="text" class="form-control mr-sm-2" placeholder="Username" name="username">
-            <input type="password" class="form-control mr-sm-2" placeholder="Password" name="password">
-            <input type="submit" class="btn btn-outline-success my-2 my-sm-0" value="Login">
-        </form>-->
-        <!-- Alternative -->
-        <a class="btn btn-social btn-google" href="/login"><i class="fa fa-youtube"></i>Sign in</a>
-    </nav>
-    <div class="container content">
-        {% block content %}
-        {# content block comes here  #}
-        {% endblock %}
+
+   <div class="wrapper">
+       <div class="navbar navbar-custom">
+           <a class="navbar-brand" id="menu-toggle-button">
+               <i class="fa fa-bars"></i>
+           </a>
+           <!--<a href="/" class="pull-right" style="max-width: 42px;">
+               <img class="img-fluid" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+           </a>-->
+       </div>
+        <nav id="sidebar" class="active">
+            <div class="sidebar-header">
+                <a href="/">
+                    <h3>Ølify</h3>
+                    <strong>
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Ø" id="öl-logo-1">
+                    </strong>
+                </a>
+            </div>
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="/">
+                        <i class="fa fa-home"></i>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#roomOptions" data-toggle="collapse" aria-expanded="false">
+                        <i class="fa fa-group"></i>
+                        Rooms
+                    </a>
+                    <ul class="collapse list-unstyled" id="roomOptions" aria-expanded="false">
+                        <li><a href="/rooms"><i class="fa fa-sign-in"></i> Log In</a></li>
+                        <li><a href="/room-creation"><i class="fa fa-plus-square"></i> Create</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/login">
+                        <i class="fa fa-user-plus"></i>
+                        Log in or sign up
+                    </a>
+                </li>
+                <li>
+                    <a href="#contactOptions" data-toggle="collapse" aria-expanded="false">
+                        <i class="fa fa-address-book"></i>
+                        Contact
+                    </a>
+                    <ul class="collapse list-unstyled" id="contactOptions">
+                        <li><a href="http://www.github.com/EelisK" target="_blank"><i class="fa fa-github"></i> GitHub</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+       <div id="content">
+            {% block content %}
+            {# content block comes here  #}
+            {% endblock %}
+        </div>
     </div>
 </body>
 </html>

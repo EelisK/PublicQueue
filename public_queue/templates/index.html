@@ -2,90 +2,66 @@
 {% block title %}index{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <nav>
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <a class="card bg-dark text-white nav-item nav-link active" id="nav-login-tab"
-           data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-home" aria-selected="true">
-          <h3 class="room-name"><i class="fa fa-group fa-object-group>"></i> room login</h3>
-        </a>
-        <a class="nav-item nav-link card bg-dark text-white"
-           id="nav-room-tab" data-toggle="tab" href="#nav-room" role="tab" aria-controls="nav-room" aria-selected="false">
-          <h3 class="room-name"><i class="fa fa-connectdevelop"></i> create a room</h3>
-        </a>
-        <a class="nav-item nav-link card bg-dark text-white"
-           id="nav-user-tab" data-toggle="tab" href="#nav-user" role="tab" aria-controls="nav-user" aria-selected="false">
-        <h3 class="room-name"><i class="fa fa-user"></i> sign up</h3>
-        </a>
-      </div>
-    </nav>
 
-    <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab">
-          <form method="post" action="/login">
-              <div class="form-control bg-dark text-warning">
-                  <div class="form-group row">
-                      <label for="sel1" class="col-sm-2 col-form-label col-form-label-lg">Room name</label>
-                      <div class="col-sm-10">
-                          <select class="form-control form-control-lg custom-select" id="sel1" name="name">
-                            {% for room in rooms %}
-                                <option value="{{ room.name }}">{{ room.name }}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                      <label for="roomPassword" class="col-sm-2 col-form-label col-form-label-lg"> Password</label>
-                      <div class="col-sm-10">
-                          <input type="password" class="form-control form-control-lg"
-                                 id="roomPassword" placeholder="password" name="password">
-                      </div>
-                  </div>
-                    <div class="form-group row">
-                        <div class="col-sm-1">
-                            <input type="submit" value="login" class="btn btn-success">
-                        </div>
-                    </div>
-              </div>
-          </form>
+    <!-- Why does this not work from index.css -->
+    <style>
+    .carousel-caption {
+        bottom: 80px;
+    }
+    @media (max-width: 768px) {
+        .carousel-caption {
+            bottom: 100px;
+        }
+        #infoCarousel {
+            height: 400px;
+        }
+        #content {
+            height: 400px;
+        }
+    }
+    </style>
 
-      </div>
-      <div class="tab-pane fade" id="nav-room" role="tabpanel" aria-labelledby="nav-room-tab">
-
-          <div class="col align-self-center">
-            <form action="/room-creation" method="post" id="login-form">
-                <div class="form-control bg-dark text-warning">
-                  <div class="form-group row">
-                      <label for="userName" class="col-sm-2 col-form-label col-form-label-lg">name</label>
-                      <div class="col-sm-10">
-                        <input type="text" name="name" class="form-control form-control-lg" id="userName">
-                      </div>
-                  </div>
-                  <div class="form-group row">
-                    <label for="userPassword" class="col-sm-2 col-form-label col-form-label-lg">password</label>
-                    <div class="col-sm-10">
-                      <input type="password" name="password" class="form-control form-control-lg" id="userPassword">
-                    </div>
-                  </div>
-                    <div class="form-group row">
-                        <div class="col-sm-1">
-                            <input type="submit" value="login" class="btn btn-success">
-                        </div>
-                    </div>
+    <div id="infoCarousel" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <span data-target="#infoCarousel" data-slide-to="0" class="fa fa-circle active"></span>
+            <span data-target="#infoCarousel" data-slide-to="1" class="fa fa-circle"></span>
+            <span data-target="#infoCarousel" data-slide-to="2" class="fa fa-circle"></span>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="carousel-caption">
+                    <h2>Create Rooms and Share Them With Your Friends!</h2>
+                    <p>Log in  or create a room and add songs to it. The party has never been more more lit
+                        (fellow kids)
+                        <i class="fa fa-fire"></i></p>
                 </div>
-            </form>
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-caption">
+                    <h2>App uses YouTube player API.</h2>
+                    <h5>...and other technologies</h5>
+                    <i class="fa fa-flask fa-3x"></i>
+                    <i class="fa fa-python fa-3x"></i>
+                    <i class="fa fa-database fa-3x"></i>
+                    <br/>
+                    <i class="fa fa-css3 fa-3x"></i>
+                    <i class="fa fa-html5 fa-3x"></i>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-caption">
+                    <h2>Get started!</h2>
+                    <p>Log in or create a room now!</p>
+                </div>
+            </div>
         </div>
-
-      </div>
-      <div class="tab-pane fade" id="nav-user" role="tabpanel" aria-labelledby="nav-user-tab">
-          <h1>TODO</h1>
-      </div>
     </div>
 
-
-        {% if error %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endif %}
+    {% if error %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
 {% endblock %}
 

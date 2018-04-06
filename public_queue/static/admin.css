@@ -21,3 +21,8 @@
     width: 100px;
     height: 100px;
 }
+
+.list-group-item-custom {
+    background: var(--li-bg);
+    color: var(--white);
+}

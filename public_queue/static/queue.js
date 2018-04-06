@@ -23,6 +23,11 @@ $(document).ready(function() {
         player.cueVideoById(videoId, startSeconds, suggestedQuality);
     }*/
 
+    $("#form-clear").on("click", function(evt) {
+        evt.preventDefault();
+        $("#search-key").val("");
+    });
+
     $(document).on("click", ".song-button",function(evt) {
         evt.preventDefault();
         const songId = this.id;
@@ -61,7 +66,7 @@ $(document).ready(function() {
         //Prepare request
         const key = $("#search-key");
         let query = encodeURIComponent(key.val());
-        key.val("");  // clear input after search
+        //key.val("");  // clear input after search
         console.log("Query:");
         console.log(query);
         $("#search-results").empty();
@@ -69,7 +74,8 @@ $(document).ready(function() {
             part: "snippet",
             type: "video",
             q: query,
-            maxResults: 5, /*5 is default anyways*/
+            maxResults: 10, /*5 is default anyways*/
+            safeSearch: "none",
             order: "relevance",
             videoCategoryId: 10, /*10 is music according to this source:
             https://gist.github.com/dgp/1b24bf2961521bd75d6c*/

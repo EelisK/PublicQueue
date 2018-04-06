@@ -13,13 +13,13 @@
 
     <!-- FOR CONTROLLING THE AUDIO -->
     <div class="btn-group">
-        <button class="btn btn-inverse green" id="backward-button"><i class="fa fa-backward"></i></button>
-        <button class="btn btn-inverse green" id="play-button" is_play="true"><i class="fa fa-pause"></i></button>
-        <button class="btn btn-inverse green" id="forward-button"><i class="fa fa-forward"></i></button>
+        <button class="btn btn-inverse" id="backward-button"><i class="fa fa-backward"></i></button>
+        <button class="btn btn-inverse" id="play-button" is_play="true"><i class="fa fa-pause"></i></button>
+        <button class="btn btn-inverse" id="forward-button"><i class="fa fa-forward"></i></button>
+        <button class="btn btn-inverse" id="skip-button"><i class="fa fa-fast-forward"></i></button>
         <!--<button class="btn btn-inverse green"><i class="fa fa-fast-backward"></i></button>
         <button class="btn btn-inverse green" id="stop-button"><i class="fa fa-stop"></i></button>
-        <button class="btn btn-inverse green" id="play-button"><i class="fa fa-play"></i></button>
-        <button class="btn btn-inverse green"><i class="fa fa-fast-forward"></i></button>-->
+        <button class="btn btn-inverse green" id="play-button"><i class="fa fa-play"></i></button>-->
     </div>
 
     <div id="player-container">
@@ -27,19 +27,20 @@
         </div>
     </div>
 
-    <script>
+    <script id="init-script">
         // create youtube player
         let player;
         function onYouTubePlayerAPIReady() {
             const id = "{{ first_id }}";
             player = new YT.Player('player', {
-              width: '640',
-              height: '390',
-              videoId: id,
-              events: {
-                onReady: onPlayerReady,
-                onStateChange: onPlayerStateChange
-              }
+                width: '640',
+                height: '390',
+                videoId: id,
+                autoPlay: true,
+                events: {
+                    onReady: onPlayerReady,
+                    onStateChange: onPlayerStateChange
+                }
             });
         }
 
@@ -53,19 +54,11 @@
             console.log(event);
             if(event.data === 0){
                 const elem = $(".remove-button").first();
-                const id = elem.attr("song_id");
-                const songId = elem.attr("db_id");
-                const url = window.location.pathname + "/delete/" + songId;
-                console.log("id: " + id + " songId " + songId);
-                console.log(url);
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: {
-                        id: id
-                    },
-                    dataType: "application/json"
-                }).always(function (res) {
+                const id = elem.attr("db_id");
+                const songId = elem.attr("song_id");
+                elem.parent().remove();
+                /*Delete song and queue the next one*/
+                deleteSongById(id, songId).always(function (res) {
                     const response = JSON.parse(res.responseText);
                     console.log(response);
                     player.loadVideoById(response.response);
@@ -78,10 +71,10 @@
     <div id="song-list-container">
         <div class="list-group" id="song-list">
             {% for song in songs %}
-                <div class="list-group-item list-group-item-action">
+                <div class="list-group-item list-group-item-custom">
                         <span class="text-center">{{ song.name }}</span>
                     <button class="remove-button btn btn-foursquare float-right"
-                            db_id="{{ song.song_id }}" song_id="{{ song.id }}">X</button>
+                            db_id="{{ song.id }}" song_id="{{ song.song_id }}">X</button>
                 </div>
             {% else %}
                 <div class="list-group-item list-group-item-info list-group-item-custom">

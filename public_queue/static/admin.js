@@ -1,22 +1,34 @@
+function deleteSongById(dbId, songId) {
+    const url = window.location.pathname + "/delete/" + songId;
+    return $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            id: dbId
+        },
+        dataType: "application/json"
+    });
+}
+
 $(document).ready(function() {
 
     /*Use this notation because of container refreshing*/
     $(document).on("click", ".remove-button", function (evt) {
         evt.preventDefault();
-        const id = $(this).attr("song_id");
-        //not really needed but good for safety
-        const songId = $(this).attr("db_id");
-        const url = window.location.pathname + "/delete/" + songId;
-        console.log("id: " + id + " songId " + songId);
-        console.log(url);
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: {
-                id: id
-            },
-            dataType: "application/json"
-        });
+        const id = $(this).attr("db_id");
+        const songId = $(this).attr("song_id");
+        const elems = $(".remove-button");
+        /*TODO*/
+        if(this === elems.first().get(0)) {
+            console.log("First removed");
+            let second = elems.children().prevObject[1];
+            console.log(second);
+            const secondSongId = second.attr("song_id");
+            console.log(secondSongId);
+            player.loadVideoById(secondSongId);
+            player.playVideo();
+        }
+        deleteSongById(id, songId);
         const dT = 500;
         $(this).parent().animate({height: 0, paddingTop: 0, paddingBottom: 0}, {duration: dT});
         setTimeout(() => $(this).parent().remove(), dT);
@@ -27,7 +39,7 @@ $(document).ready(function() {
     });
     $("#forward-button").on("click", function(e) {
        e.preventDefault();
-       $("")
+       //$("")
     });
     $("#play-button").on("click", function(e) {
        e.preventDefault();
@@ -45,6 +57,23 @@ $(document).ready(function() {
        }
     });
 
+    $("#skip-button").on("click", function(evt) {
+        evt.preventDefault();
+        const btn = $(".remove-button").first();
+        const id = btn.attr("db_id");
+        const songId = btn.attr("song_id");
+        btn.parent().remove();
+        deleteSongById(id, songId).always(
+            function (res) {
+                const response = JSON.parse(res.responseText);
+                console.log(response);
+                player.loadVideoById(response.response);
+                player.playVideo();
+            }
+        );
+
+    });
+
     /*Refresh list every 5 seconds*/
     setInterval(function() {
         $("#song-list-container").load(location.href + " #song-list");
@@ -58,6 +87,7 @@ $(document).ready(function() {
             const id = elem.first().attr("db_id");
             no_songs = false;
             player.loadVideoById(id);
+            player.playVideo();
         } else if(elem.length === 0) {
             no_songs = true;
         }

@@ -17,9 +17,16 @@
     </div>
 
     <form class="input-group mb-3" id="search-form">
-        <input type="text" class="form-control" placeholder="search" id="search-key" disabled>
+        <div class="input-group-prepend">
+            <button class="btn btn-secondary" type="submit" id="form-submit">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <input type="text" class="form-control" placeholder="type here" id="search-key" disabled>
         <div class="input-group-append">
-            <input class="btn btn-outline-success" type="submit" id="form-submit" value="Search">
+            <button class="btn btn-secondary" id="form-clear">
+                <i class="fa fa-close"></i>
+            </button>
         </div>
     </form>
 
@@ -31,7 +38,7 @@
             {% for song in room.queue %}
                 <li class="list-group-item list-group-item-custom">{{song.name}}</li>
             {% else %}
-                <li class="list-group-item border-danger">No songs in queue</li>
+                <li class="list-group-item list-group-item-custom empty">No songs in queue</li>
             {% endfor %}
         </ol>
     </div>

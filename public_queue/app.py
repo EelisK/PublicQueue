@@ -150,12 +150,15 @@ def user_login():
         if password is not None and username is not None:
             password = sha256(password.encode("ascii")).hexdigest()
             session = Session()
-            actual_user = session.query(User).filter(User.name == username)[0]
+            try:
+                actual_user = session.query(User).filter(User.name == username)[0]
+            except IndexError:
+                return redirect(url_for('user_login', error="User does not exist"))
             if password == actual_user.password and username == actual_user.name:
                 print("\nTODO: log the user in\n")
                 return redirect("/")
         return redirect(url_for('index', error="Login failed."))
-    return render_template("user-login.html")
+    return render_template("user-login.html", error=request.args.get("error"))
 
 
 @app.route("/register", methods=["POST"])
@@ -164,6 +167,9 @@ def register():
     password = request.form.get("password")
     password_confirmation = request.form.get("confirm-password")
     error = ""
+    print(password)
+    print(password_confirmation)
+    print(username)
     if password is not None and password == password_confirmation and len(password) > 3:
         encoded_password = sha256(password.encode("ascii")).hexdigest()
         session = Session()
@@ -175,11 +181,11 @@ def register():
         print("Successfully created new user.")
         return redirect("/")
     print("Failed to create new user.")
-    if password == password_confirmation:
+    if password != password_confirmation:
         error += "Passwords did not match. "
-    if password is None or len(password) > 3:
+    if password is None or len(password) < 3:
         error += "Password was too short."
-    return redirect(url_for("user_login", error=""))
+    return redirect(url_for("user_login", error=error))
 
 
 @login_manager.user_loader
