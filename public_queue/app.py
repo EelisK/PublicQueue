@@ -19,8 +19,7 @@ login_manager.init_app(app)
 Session = sessionmaker(bind=engine)
 
 
-def get_rooms():
-    session = Session()
+def get_rooms(session):
     return session.query(Room).all()
 
 
@@ -39,11 +38,11 @@ def insert_room(name, password):
 @app.route("/rooms", methods=["GET", "POST"])
 def room_login():
     error = None
+    session = Session()
     if request.method == "POST":
         name = request.form.get("name")
         password = request.form.get("password")
         password = sha256(password.encode("ascii")).hexdigest()
-        session = Session()
         real_password = session.query(Room.password).filter(Room.name == name).first()[0]
         print("{}".format(real_password))
         print("{}".format(password))
@@ -55,7 +54,7 @@ def room_login():
             response = session_manager.add_cookie_to_response(response, cookie)
             return response
         error = "Invalid password."
-    return render_template("login.html", error=error, rooms=get_rooms())
+    return custom_render_template(session, "login.html", error=error, rooms=get_rooms(session))
 
 
 @app.route("/rooms/<name>", methods=["POST", "GET"])
@@ -99,16 +98,17 @@ def room(name=None):
                     mimetype="application/json"
                 )
                 return response
-    return render_template("room.html", room=room, songs=room.queue)
+    return custom_render_template(session, "room.html", room=room, songs=room.queue)
 
 
 @app.route("/rooms/<name>/admin", methods=["POST", "GET"])
 def admin_page(name=None):
-    room = next(r for r in get_rooms() if r.name == name)
+    session = Session()
+    room = next(r for r in get_rooms(session) if r.name == name)
     first_id = None
     if len(room.queue) > 0:
         first_id = room.queue[0].song_id
-    return render_template("admin.html", room=room, songs=room.queue, first_id=first_id)
+    return custom_render_template(session, "admin.html", room=room, songs=room.queue, first_id=first_id)
 
 
 @app.route("/rooms/<name>/admin/delete/<song_id>", methods=["POST"])
@@ -133,11 +133,12 @@ def delete_song(name=None, song_id=None):
 
 @app.route("/room-creation", methods=["POST", "GET"])
 def create_room():
+    session = Session()
     if request.method == "POST":
         name = request.form.get("name")
         password = request.form.get("password")
         if " " in name or "\t" in name or "\n" in name:
-            return render_template("room-creation.html", error="Room name cannot contain spaces.")
+            return custom_render_template(session, "room-creation.html", error="Room name cannot contain spaces.")
         # If insert is successful redirect to room url
         insert_successful, room = insert_room(name, password)
         if insert_successful:
@@ -146,10 +147,10 @@ def create_room():
             response = session_manager.add_cookie_to_response(response, cookie)
             return response
         else:
-            return render_template("room-creation.html", error="Room with that name exists already.")
+            return custom_render_template(session, "room-creation.html", error="Room with that name exists already.")
     else:
         if current_user.is_authenticated or True:
-            return render_template("room-creation.html")
+            return custom_render_template(session, "room-creation.html")
         else:
             return redirect(url_for("index", error="Login required to create rooms."))
 
@@ -158,13 +159,15 @@ def create_room():
 def index():
     error = request.args.get("error")
     user = None
+    session = Session()
     if current_user.is_authenticated: 
         user = current_user
-    return render_template("index.html", user=user, error=error, rooms=get_rooms())
+    return custom_render_template(session, "index.html", user=user, error=error, rooms=get_rooms(session))
 
 
 @app.route("/login", methods=["POST", "GET"])
 def user_login():
+    session = Session()
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -179,7 +182,7 @@ def user_login():
                 print("\nTODO: log the user in\n")
                 return redirect("/")
         return redirect(url_for('index', error="Login failed."))
-    return render_template("user-login.html", error=request.args.get("error"))
+    return custom_render_template(session, "user-login.html", error=request.args.get("error"))
 
 
 @app.route("/register", methods=["POST"])
@@ -213,3 +216,6 @@ def register():
 def user_loader(user_id):
     pass
 
+
+def custom_render_template(session, *args, **kwargs):
+    return render_template(*args, **kwargs, my_rooms=session_manager.get_user_rooms(session))

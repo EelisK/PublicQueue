@@ -51,6 +51,23 @@
                         Home
                     </a>
                 </li>
+                {% if my_rooms %}
+                    <li>
+                        <a href="#myRooms" data-toggle="collapse" aria-expanded="false">
+                            <i class="fa fa-sellsy"></i>
+                            My rooms
+                        </a>
+                        <ul class="collapse list-unstyled" id="myRooms" aria-expanded="false">
+                            {% for room in my_rooms %}
+                                <li class="spam-control">
+                                    <a href="/rooms/{{ room.name }}">
+                                        <small>{{ room.name }}</small>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
                 <li>
                     <a href="#roomOptions" data-toggle="collapse" aria-expanded="false">
                         <i class="fa fa-group"></i>
@@ -74,8 +91,6 @@
                     </a>
                     <ul class="collapse list-unstyled" id="contactOptions">
                         <li><a href="http://www.github.com/EelisK" target="_blank"><i class="fa fa-github"></i> GitHub</a></li>
-                        <li><a href="https://www.linkedin.com/in/eelis-kostiainen/" target="_blank"><i class="fa fa-linkedin-square"></i> LinkedIn</a></li>
-                        <li><a href="https://t.me/eelisko" target="_blank"><i class="fa fa-telegram"></i> Telegram</a></li>
                     </ul>
                 </li>
             </ul>

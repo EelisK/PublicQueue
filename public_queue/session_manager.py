@@ -1,4 +1,6 @@
 from hashlib import sha512
+from flask import request
+from public_queue.models import Room
 import datetime
 
 
@@ -21,3 +23,16 @@ def add_cookie_to_response(response, cookie):
     expiration += datetime.timedelta(hours=12)
     response.set_cookie(cookie["name"], cookie["value"], expires=expiration)
     return response
+
+
+def get_user_rooms(session):
+    """
+    :param session: session that we use to query all the room instances
+    :return: all rooms that match the users cookies
+    """
+    rooms = []
+    for room in session.query(Room).all():
+        cookie = get_cookie_matching_room(room)
+        if cookie["name"] in request.cookies and cookie["value"] == request.cookies.get(cookie["name"]):
+            rooms.append(room)
+    return rooms

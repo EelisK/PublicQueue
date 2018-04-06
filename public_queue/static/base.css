@@ -180,6 +180,10 @@ ul ul a {
     color: var(--white);
 }
 
+.spam-control {
+    word-break: break-all;
+}
+
 #cookie-bar {
     color: var(--white);
     font-weight: normal;
