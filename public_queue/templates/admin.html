@@ -30,7 +30,7 @@
         // create youtube player
         let player;
         function onYouTubePlayerAPIReady() {
-            const id = "{{ first_id }}";
+            const id = getActiveButton().attr("song_id");
             player = new YT.Player('player', {
                 width: '640',
                 height: '390',
@@ -60,19 +60,23 @@
             5 – video cued
             */
             if(event.data === 0){
-                const elem = $(".remove-button").first();
+                //.remove-button
+                const elem = $(".list-group-item-custom > .active ~ .remove-button").first();
+                console.log("NONIIN");
+                console.log(elem);
                 const id = elem.attr("db_id");
                 const songId = elem.attr("song_id");
-                elem.parent().remove();
+                //elem.parent().remove();
+                playNextSong(id, songId);
                 /*Delete song and queue the next one*/
-                deleteSongById(id, songId).always(function (res) {
+                /*deleteSongById(id, songId).always(function (res) {
                     const response = JSON.parse(res.responseText);
                     console.log(response);
                     player.loadVideoById(response.response);
                     player.playVideo();
                     const barElem = $(".playback-bar").first();
                     barElem.load(barElem.href);
-                });
+                });*/
             } else if(event.data === -1) {
                 player.playVideo();
             } else if(event.data === 1) {
@@ -82,7 +86,7 @@
                     const formattedTime = parseInt((parseInt(currentDuration)) / 60) + ":" + ("0"+(parseInt(currentDuration))%60).slice(-2);
                     time.html(formattedTime);
                     {% if songs %}
-                    $("#time-total").html("{{ (songs|current_song).duration|format_seconds }}")
+                    $("#time-total").html("{{ (room|current_song).duration|format_seconds }}")
                     {% endif %}
                 }, 1000);
                 interval_bar = setInterval(function() {
@@ -102,7 +106,7 @@
         <div class="list-group" id="song-list">
             {% for song in songs %}
                 <div class="list-group-item list-group-item-custom">
-                    {% if song.id == (songs|current_song).id %}
+                    {% if song.id == (room|current_song).id %}
                         <span class="text-center active">{{ song.name }}</span>
                     {% else %}
                         <span class="text-center">{{ song.name }}</span>
@@ -120,9 +124,9 @@
 
     <footer class="footer align-bottom">
         <!--<div class="float-left song-thumbnail-bottom">
-            <img class="img-fluid" src="{{ (songs|current_song).thumbnail }}" alt="{{ room.name }}">
+            <img class="img-fluid" src="{{ (room|current_song).thumbnail }}" alt="{{ room.name }}">
             <span class="modal-title" style="width: 100px; display: inline;">
-                {{ (songs|current_song).name }}
+                {{ (room|current_song).name }}
             </span>
         </div>-->
         <div class="container text-center">
@@ -137,13 +141,13 @@
                     <div class="progress" style="height: 5px;">
                         {% if songs %}
                         <div class="progress-bar align-middle" id="song-duration-progress-bar" role="progressbar" style="width: 0;" aria-valuenow="0"
-                             aria-valuemin="0" aria-valuemax="{{ (songs|current_song).duration }}" song-id="{{ (songs|current_song).song_id }}"></div>
+                             aria-valuemin="0" aria-valuemax="{{ (room|current_song).duration }}" song-id="{{ (room|current_song).song_id }}"></div>
                         {% else %}
                         {% endif %}
                     </div>
                 </div>
                 {% if songs %}
-                    <div class="time-indicator" id="time-total">{{ (songs|current_song).duration|format_seconds }}</div>
+                    <div class="time-indicator" id="time-total">{{ (room|current_song).duration|format_seconds }}</div>
                 {% else %}
                     <div class="time-indicator" id="time-total">0:00</div>
                 {% endif %}

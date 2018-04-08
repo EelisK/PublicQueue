@@ -10,6 +10,63 @@ function deleteSongById(dbId, songId) {
     });
 }
 
+
+function playNextSong(dbId, songId) {
+    const url = window.location.pathname + "/play/" + songId;
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            id: dbId
+        },
+        dataType: "application/json"
+    }).always(
+        function (res) {
+            console.log(res);
+            const response = JSON.parse(res.responseText);
+            console.log(response);
+            updateRelevantElements();
+            player.loadVideoById(response.response);
+            player.playVideo();
+        }
+    );
+}
+
+function playSongById(dbId, songId) {
+    const url = window.location.pathname + "/play/" + songId;
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            id: dbId
+        },
+        dataType: "application/json"
+    }).always(
+        function (res) {
+            console.log(res);
+            const response = JSON.parse(res.responseText);
+            console.log(response);
+            updateRelevantElements();
+            player.loadVideoById(response.response);
+            player.playVideo();
+        }
+    );
+}
+
+
+function getActiveButton() {
+    return $(".list-group-item-custom > .active ~ .remove-button").first();
+}
+
+
+function updateRelevantElements() {
+    setBgAndThumbnail();
+    $("#song-list-container").load(location.href + " #song-list");
+}
+
+
 function setBgAndThumbnail() {
     try {
         /**Set background color of body based on the first thumbnails color*/
@@ -24,12 +81,11 @@ function setBgAndThumbnail() {
             const bg = "linear-gradient(180deg,rgb("+dominantColor[0]+","+dominantColor[1]+","+dominantColor[2]+"), var(--dark) 40%)";
             $("body").css("background", bg);
             const thumbnail = $("#list-thumbnail");
-            //thumbnail.empty();
             thumbnail.html($(image));
             thumbnail.css("background", "none");
             $(image).css("width", "100%");
             $(image).css("display", "inline-block");
-            $(image).css("margin-top", "25%");
+            thumbnail.css("height", "200px");
         };
     } catch(error) {
         console.log(error);
@@ -67,18 +123,20 @@ $(document).ready(function() {
             player.playVideo();
         }
         deleteSongById(id, songId);
+        //playNextSong(id, songId);
         const dT = 500;
         $(this).parent().animate({height: 0, paddingTop: 0, paddingBottom: 0}, {duration: dT});
         setTimeout(() => $(this).parent().remove(), dT);
     });
 
-    $("#backward-button").on("click", function(e) {
-       e.preventDefault();
+    $("#previous-button").on("click", function (e) {
+        e.preventDefault();
+        const previousBtn = getActiveButton().prev();
+        const id = previousBtn.attr("bd_id");
+        const songId = previousBtn.attr("song_id");
+        //playSongById(id, songId);
     });
-    $("#forward-button").on("click", function(e) {
-       e.preventDefault();
-       //$("")
-    });
+
     $("#play-button").on("click", function(e) {
        e.preventDefault();
        const elem = $(this);
@@ -104,10 +162,11 @@ $(document).ready(function() {
 
     $("#skip-button").on("click", function(evt) {
         evt.preventDefault();
-        const btn = $(".remove-button").first();
+        const btn = getActiveButton();
+        console.log(btn);
         const id = btn.attr("db_id");
         const songId = btn.attr("song_id");
-        btn.parent().remove();
+        /*btn.parent().remove();
         deleteSongById(id, songId).always(
             function (res) {
                 const response = JSON.parse(res.responseText);
@@ -115,7 +174,8 @@ $(document).ready(function() {
                 player.loadVideoById(response.response);
                 player.playVideo();
             }
-        );
+        );*/
+        playNextSong(id, songId);
 
     });
 
@@ -127,7 +187,7 @@ $(document).ready(function() {
     let no_songs = $(".remove-button").length === 0;
 
     setInterval(function() {
-        const elem = $(".remove-button");
+        const elem = getActiveButton();
         if(elem.length !== 0 && no_songs) {
             const id = elem.first().attr("db_id");
             no_songs = false;

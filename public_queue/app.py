@@ -85,6 +85,9 @@ def room(name=None):
             song = Song(song_id=song_id, name=song_name, thumbnail=thumbnail_url, duration=duration)
             try:
                 session.add(song)
+                # Check if this song was the first and if it was add its id to the room
+                if len(room.queue) == 0:
+                    room.current_song_id = song.id
                 room.queue.append(song)
                 session.commit()
                 data = "success"
@@ -140,8 +143,28 @@ def delete_song(name=None, song_id=None):
     except IndexError:
         next_id = None
     return jsonify(response=next_id)
-    # song = session.query(Song).filter(Song.room == room and Song.song_id == song_id).all()
-    # session.delete(song)
+
+
+@app.route("/rooms/<name>/admin/play/<song_id>", methods=["POST"])
+def change_song(name=None, song_id=None):
+    session = Session()
+    id = request.form.get("id")
+    print(request.form)
+    print(request)
+    room = session.query(Room).filter(Room.name == name)[0]
+    try:
+        print("song id: {}\n".format(id))
+        song = next(s for s in session.query(Song).filter(Song.id > id))
+        print("SONG:\n")
+        print(song)
+        print("\n")
+        print("\n\nNext song id: {}\n\n".format(song.id))
+        room.current_song_id = song.id
+        session.commit()
+        return jsonify(response=song.song_id)
+    except StopIteration as e:
+        # There was no next song
+        return jsonify(response=str(e))
 
 
 @app.route("/room-creation", methods=["POST"])
@@ -245,9 +268,10 @@ def format_seconds(number):
     return "{}:{:02d}".format(minutes, seconds)
 
 
-def current_song(queue):
+def current_song(room):
+    session = Session()
     try:
-        return queue[0]
+        return session.query(Song).filter(Song.id == room.current_song_id)[0]
     except IndexError:
         return None
 

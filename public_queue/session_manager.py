@@ -52,8 +52,6 @@ def get_user_rooms(session):
         if cookie_user["name"] in request.cookies and \
                 cookie_user["value"] == request.cookies.get(cookie_user["name"]):
             rooms["user"].append(room)
-        print(request.cookies.get(cookie_admin["name"]))
-        print(cookie_admin["value"])
         if cookie_admin["name"] in request.cookies and \
                 cookie_admin["value"] == request.cookies.get(cookie_admin["name"]):
             rooms["admin"].append(room)
