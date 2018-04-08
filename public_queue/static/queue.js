@@ -5,16 +5,21 @@ $(document).ready(function() {
         $("#search-key").val("");
     });
 
-    $(document).on("click", ".song-button",function(evt) {
+    $(document).on("click", ".song-button", function(evt) {
         evt.preventDefault();
-        const songId = this.id;
+        const songId = $(this).attr("song-id");
+        const thumbnailUrl = $(this).attr("thumbnail-url");
+        const duration = $(this).attr("duration");
+        console.log("url: " + thumbnailUrl);
         const songName = this.innerHTML;
         $.ajax({
             type: "POST",
             url: window.location.pathname,
             data: {
                 song_id: songId,
-                song_name: songName
+                song_name: songName,
+                thumbnail_url: thumbnailUrl,
+                duration: duration
             },
             success: function(data) {
                 console.log("SUCCESS");
@@ -44,8 +49,6 @@ $(document).ready(function() {
         const key = $("#search-key");
         let query = encodeURIComponent(key.val());
         //key.val("");  // clear input after search
-        console.log("Query:");
-        console.log(query);
         $("#search-results").empty();
         const request = gapi.client.youtube.search.list({
             part: "snippet",
@@ -63,15 +66,25 @@ $(document).ready(function() {
             searchResults.css("paddingBottom", "12px");
             let result = response.result;
             console.log(response);
+
             $.each(result.items, function(index, item) {
                 console.log(item);
-                const classes = "song-button list-group-item list-group-item-action";
-                const elem = $("<button class='"+classes+"' type='button' id='" +
-                    item["id"]["videoId"] + "'>" + item["snippet"]["title"] + "" + "</button>");
-                searchResults.append(elem);
-                //const thumbnail = item["snippet"]["thumbnails"]["default"]["url"];
-                //console.log(thumbnail);
-                //$("#"+item["id"]["videoId"]).css("background-image: url('" + thumbnail + "');");
+                const videoId = item["id"]["videoId"];
+                const url = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id="+
+                    videoId+"&key=AIzaSyDkkNJHGrVQo6D95PeAfhLrf0lTqGKWmIE";
+                /*Get song duration*/
+                $.getJSON(url, function (data) {
+                    const duration = data.items[0]["contentDetails"]["duration"];
+                    let duration_seconds = moment.duration(duration)._milliseconds / 1000;
+                    console.log(duration_seconds);
+                    const classes = "song-button list-group-item list-group-item-action";
+                    const thumbnail = item["snippet"]["thumbnails"]["high"]["url"]; //high or default
+                    const elem = $("<button class='"+classes+"' type='button'>" + item["snippet"]["title"] + "</button>");
+                    elem.attr("duration", duration_seconds);
+                    elem.attr("thumbnail-url", thumbnail);
+                    elem.attr("song-id", videoId);
+                    searchResults.append(elem);
+                });
             });
             searchResults.css("height", "100%");
         });

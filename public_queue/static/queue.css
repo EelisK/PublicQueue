@@ -7,9 +7,9 @@
 }
 
 .list-group-item-custom {
-    background: var(--li-bg);
     color: var(--white);
     counter-increment: step-counter;
+    background: var(--black);
 }
 
 .list-group-item-custom::before {
@@ -52,6 +52,17 @@
 
 #song-list-container {
     padding-bottom: 20px;
+    height: calc(100% - 100px);
+    overflow-y: scroll;
 }
 
+
+#search-results {
+    padding-bottom: 12px;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    margin-right: auto;
+    margin-left: auto;
+}
 

@@ -2,6 +2,7 @@ $(document).ready(function () {
     $("#menu-toggle-button").on("click", function() {
         $("#sidebar").toggleClass("active");
     });
+
     /*Should create own cookie stuff...*/
     const cookieInterval = setInterval(function() {
         const cookieButton = $("#cookie-bar-button");

@@ -116,6 +116,11 @@ div.col-xs-6 {
 	margin-right: auto;
 }
 
+select.form-control {
+	border-radius: 20px;
+	height: 45px !important;
+}
+
 .btn-success {
 	margin-right: auto;
 	margin-left: auto;

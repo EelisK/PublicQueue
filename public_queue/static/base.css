@@ -2,7 +2,7 @@
 
 :root {
     --green: #1DB850;
-    --black: #222325;
+    --black: #222325AA;/*remove AA if necessary*/
     --dark: #111312;
     --blue: #5d00ed;
     --red: #ed5d00;
@@ -10,6 +10,8 @@
     --text-color: #88898B;
     --li-bg: #282828;
     --login-bg: #2E2E33;
+    --progress-bg: #424242;
+    --light-grey: #A0A0A0;
     --max-width: 768px;
 }
 
@@ -17,7 +19,8 @@ body {
     /*background: var(--green);*/
     width: 100%;
     height: 100%;
-    background: var(--dark);
+    /*background: var(--dark);*/
+    background: linear-gradient(180deg,rgb(29,184,80), var(--dark) 40%);
     /*radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(0,237,93,1) 35%, rgba(0,212,255,1) 100%);*/
     color: var(--text-color); /*text color*/
     font-family: 'Montserrat SemiBold', 'Open Sans', sans-serif;
@@ -54,7 +57,7 @@ a, a:hover, a:focus {
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: var(--black);
+    /*background: var(--black);*/
     border-bottom: 1px solid grey;
 }
 
@@ -144,10 +147,11 @@ ul ul a {
 
 #content {
     padding: 20px;
-    height: 100%;
+    height: calc(100vh - 55px);
     transition: all 0.3s;
     display: inline-block;
     float: right;
+    position: relative;
 }
 
 #sidebar.active ~ #content {
@@ -182,6 +186,7 @@ ul ul a {
 
 .spam-control {
     word-break: break-all;
+    font-size: 0.7em;
 }
 
 #cookie-bar {
@@ -192,6 +197,11 @@ ul ul a {
 #öl-logo-1 {
     max-width: 40px;
     max-height: 40px;
+}
+
+.room-title {
+    font-size: 0.6em;
+    color: var(--green);
 }
 
 @media (max-width: 768px) {
@@ -243,6 +253,7 @@ ul ul a {
         padding: 10px !important;
     }
 
+
 }
 
 /*Display #content on an iPad
@@ -252,3 +263,5 @@ ul ul a {
         display: none;
     }
 }
+
+

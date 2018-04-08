@@ -6,6 +6,8 @@
     <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"></script>
     <script src="{{ url_for('static', filename='base.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/color-thief.js') }}"></script>
     <!--<script defer src="{{ url_for('static', filename='js/fontawesome-all.js') }}"></script>-->
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
@@ -16,7 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Cookie consent -->
-    <script id="cookie-consent-script" type="text/javascript" src="https://cdn.jsdelivr.net/npm/cookie-bar/cookiebar-latest.min.js"></script>
+    <script id="cookie-consent-script" type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/cookie-bar/cookiebar-latest.min.js"></script>
     
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
 
@@ -51,37 +54,38 @@
                         Home
                     </a>
                 </li>
-                {% if my_rooms %}
+                {% if my_rooms.user %}
                     <li>
                         <a href="#myRooms" data-toggle="collapse" aria-expanded="false">
                             <i class="fa fa-sellsy"></i>
                             My rooms
                         </a>
                         <ul class="collapse list-unstyled" id="myRooms" aria-expanded="false">
-                            {% for room in my_rooms %}
+                            <span class="room-title">Participated</span>
+                            {% for room in my_rooms.user %}
                                 <li class="spam-control">
                                     <a href="/rooms/{{ room.name }}">
-                                        <small>{{ room.name }}</small>
+                                        {{ room.name }}
                                     </a>
                                 </li>
                             {% endfor %}
+                            {% if my_rooms.admin %}
+                                <span class="room-title">Own rooms</span>
+                                {% for room in my_rooms.admin %}
+                                    <li class="spam-control">
+                                        <a href="/rooms/{{ room.name }}/admin">
+                                            {{ room.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}
                 <li>
-                    <a href="#roomOptions" data-toggle="collapse" aria-expanded="false">
-                        <i class="fa fa-group"></i>
-                        Rooms
-                    </a>
-                    <ul class="collapse list-unstyled" id="roomOptions" aria-expanded="false">
-                        <li><a href="/rooms"><i class="fa fa-sign-in"></i> Log In</a></li>
-                        <li><a href="/room-creation"><i class="fa fa-plus-square"></i> Create</a></li>
-                    </ul>
-                </li>
-                <li>
                     <a href="/login">
                         <i class="fa fa-user-plus"></i>
-                        Log in or sign up
+                        Login
                     </a>
                 </li>
                 <li>
@@ -90,6 +94,7 @@
                         Contact
                     </a>
                     <ul class="collapse list-unstyled" id="contactOptions">
+                        <li><a href="https://t.me/eelisko" target="_blank"><i class="fa fa-telegram"></i> Telegram</a></li>
                         <li><a href="http://www.github.com/EelisK" target="_blank"><i class="fa fa-github"></i> GitHub</a></li>
                     </ul>
                 </li>

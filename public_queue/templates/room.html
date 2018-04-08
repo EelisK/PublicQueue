@@ -36,7 +36,7 @@
     <div id="song-list-container">
         <ol class="list-group" id="song-list">
             {% for song in room.queue %}
-                <li class="list-group-item list-group-item-custom">{{song.name}}</li>
+                <li class="list-group-item list-group-item-custom">{{song.name}}<span class="float-right">{{ song.duration|format_seconds }}</span></li>
             {% else %}
                 <li class="list-group-item list-group-item-custom empty">No songs in queue</li>
             {% endfor %}

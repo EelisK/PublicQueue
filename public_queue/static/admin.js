@@ -10,7 +10,45 @@ function deleteSongById(dbId, songId) {
     });
 }
 
+function setBgAndThumbnail() {
+    try {
+        /**Set background color of body based on the first thumbnails color*/
+        const src = "/static/images/" + $("#song-duration-progress-bar").attr("song-id") + ".jpg";
+        let image = new Image;
+        image.src = src;
+        console.log(image);
+        console.log(src);
+        const colorThief = new ColorThief();
+        image.onload = function () {
+            const dominantColor = colorThief.getColor(image);
+            const bg = "linear-gradient(180deg,rgb("+dominantColor[0]+","+dominantColor[1]+","+dominantColor[2]+"), var(--dark) 40%)";
+            $("body").css("background", bg);
+            const thumbnail = $("#list-thumbnail");
+            //thumbnail.empty();
+            thumbnail.html($(image));
+            thumbnail.css("background", "none");
+            $(image).css("width", "100%");
+            $(image).css("display", "inline-block");
+            $(image).css("margin-top", "25%");
+        };
+    } catch(error) {
+        console.log(error);
+    }
+}
+
 $(document).ready(function() {
+
+    setBgAndThumbnail();
+
+    $("#play-pause-button").on("click", function(evt) {
+        evt.preventDefault();
+        if($(this).html() === "play") {
+            $(this).html("pause")
+        } else {
+            $(this).html("play")
+        }
+        $("#play-button").click();
+    });
 
     /*Use this notation because of container refreshing*/
     $(document).on("click", ".remove-button", function (evt) {
@@ -44,15 +82,22 @@ $(document).ready(function() {
     $("#play-button").on("click", function(e) {
        e.preventDefault();
        const elem = $(this);
+       const anotherButton = $("#play-pause-button");
        if(elem.attr("is_play") === "false") {
            elem.find(".fa").removeClass();
            elem.find("i").addClass("fa fa-pause");
            elem.attr("is_play", "true");
+           if(anotherButton.html() === "play") {
+               anotherButton.html("pause");
+           }
            player.playVideo();
        } else {
            elem.find(".fa").removeClass();
            elem.find("i").addClass("fa fa-play");
            elem.attr("is_play", "false");
+           if(anotherButton.html() === "pause") {
+               anotherButton.html("play");
+           }
            player.pauseVideo();
        }
     });
@@ -92,4 +137,8 @@ $(document).ready(function() {
             no_songs = true;
         }
     }, 5010);
+
+    setInterval(function() {
+    }, 1000);
+
 });
