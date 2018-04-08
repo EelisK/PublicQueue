@@ -5,9 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from hashlib import sha256
 from public_queue.models import Room, engine, Song, User
 from public_queue.secret_keys import secret_key, wtf_csrf_secret_key
-from public_queue import session_manager
+from public_queue import session_manager, thumbnail_manager
 import builtins
 import sqlalchemy
+import jinja2
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -39,19 +40,22 @@ def insert_room(name, password):
 def room_login():
     error = None
     session = Session()
+    # Login on POST
     if request.method == "POST":
-        name = request.form.get("name")
+        name = request.form.get("room-name")
         password = request.form.get("password")
         password = sha256(password.encode("ascii")).hexdigest()
-        real_password = session.query(Room.password).filter(Room.name == name).first()[0]
-        print("{}".format(real_password))
-        print("{}".format(password))
+        try:
+            real_password = next(r for r in session.query(Room).filter(Room.name == name)).password
+        except StopIteration:
+            print("Room does not exist")
+            return redirect(url_for("index", error="You tried to log in to a room that does not exist"))
         if name in map(lambda n: n[0], session.query(Room.name).all()) and password == real_password:
             # Set user cookie
             response = make_response(redirect("rooms/{}".format(name)))
-            room = session.query(Room).filter(Room.name == name)[0]
-            cookie = session_manager.get_cookie_matching_room(room)
-            response = session_manager.add_cookie_to_response(response, cookie)
+            room = next(r for r in session.query(Room).filter(Room.name == name))
+            user_cookie = session_manager.get_cookie_matching_room(room)
+            response = session_manager.add_cookie_to_response(response, user_cookie)
             return response
         error = "Invalid password."
     return custom_render_template(session, "login.html", error=error, rooms=get_rooms(session))
@@ -64,20 +68,21 @@ def room(name=None):
         room = next(r for r in session.query(Room).all() if r.name == name)
     except StopIteration:
         return render_template("404.html")
-
     cookie = session_manager.get_cookie_matching_room(room)
     # Check that user has already logged in by looking at their cookies
     if cookie["name"] not in request.cookies or cookie["value"] != request.cookies.get(cookie["name"]):
         return redirect(url_for("room_login", error="You need to log in before you can enter a room"))
-
+    # Post a song to rooms queue
     if request.method == "POST":
         song_id = request.form.get("song_id")
         song_name = request.form.get("song_name")
+        thumbnail_url = request.form.get("thumbnail_url")
+        duration = request.form.get("duration")
         if song_id is None:
             # Here we got a response to our response
             pass
         else:
-            song = Song(song_id=song_id, name=song_name)
+            song = Song(song_id=song_id, name=song_name, thumbnail=thumbnail_url, duration=duration)
             try:
                 session.add(song)
                 room.queue.append(song)
@@ -88,6 +93,10 @@ def room(name=None):
                     status=200,
                     mimetype="application/json"
                 )
+
+                # Download thumbnail
+                thumbnail_manager.download_thumbnail(thumbnail_url, song_id)
+
                 return response
             except (builtins.TypeError, sqlalchemy.exc.IntegrityError) as e:
                 print(e)
@@ -105,6 +114,10 @@ def room(name=None):
 def admin_page(name=None):
     session = Session()
     room = next(r for r in get_rooms(session) if r.name == name)
+    admin_cookie = session_manager.get_admin_cookie_matching_room(room)
+    if admin_cookie["name"] not in request.cookies or \
+            admin_cookie["value"] != request.cookies.get(admin_cookie["name"]):
+        return redirect(url_for("index", error="You are not admin."))
     first_id = None
     if len(room.queue) > 0:
         first_id = room.queue[0].song_id
@@ -131,20 +144,25 @@ def delete_song(name=None, song_id=None):
     # session.delete(song)
 
 
-@app.route("/room-creation", methods=["POST", "GET"])
+@app.route("/room-creation", methods=["POST"])
 def create_room():
     session = Session()
     if request.method == "POST":
-        name = request.form.get("name")
+        name = request.form.get("room-name")
         password = request.form.get("password")
+        password_re = request.form.get("confirm-password")
         if " " in name or "\t" in name or "\n" in name:
             return custom_render_template(session, "room-creation.html", error="Room name cannot contain spaces.")
+        if password != password_re:
+            return custom_render_template(session, "room-creation.html", error="Passwords did not match.")
         # If insert is successful redirect to room url
         insert_successful, room = insert_room(name, password)
         if insert_successful:
             response = make_response(redirect("/rooms/{}".format(name)))
             cookie = session_manager.get_cookie_matching_room(room)
-            response = session_manager.add_cookie_to_response(response, cookie)
+            response = session_manager.add_cookie_to_response(response, cookie, admin=True)
+            admin_cookie = session_manager.get_admin_cookie_matching_room(room)
+            response = session_manager.add_cookie_to_response(response, admin_cookie, admin=True)
             return response
         else:
             return custom_render_template(session, "room-creation.html", error="Room with that name exists already.")
@@ -181,8 +199,8 @@ def user_login():
             if password == actual_user.password and username == actual_user.name:
                 print("\nTODO: log the user in\n")
                 return redirect("/")
-        return redirect(url_for('index', error="Login failed."))
-    return custom_render_template(session, "user-login.html", error=request.args.get("error"))
+        return redirect(url_for('user_login', error="Login failed."))
+    return custom_render_template(session, "login.html", error=request.args.get("error"), rooms=get_rooms(session))
 
 
 @app.route("/register", methods=["POST"])
@@ -219,3 +237,21 @@ def user_loader(user_id):
 
 def custom_render_template(session, *args, **kwargs):
     return render_template(*args, **kwargs, my_rooms=session_manager.get_user_rooms(session))
+
+
+def format_seconds(number):
+    minutes = number // 60
+    seconds = number % 60
+    return "{}:{:02d}".format(minutes, seconds)
+
+
+def current_song(queue):
+    try:
+        return queue[0]
+    except IndexError:
+        return None
+
+
+jinja2.filters.FILTERS["format_seconds"] = format_seconds
+jinja2.filters.FILTERS["current_song"] = current_song
+
