@@ -145,20 +145,28 @@ def delete_song(name=None, song_id=None):
     return jsonify(response=next_id)
 
 
-@app.route("/rooms/<name>/admin/play/<song_id>", methods=["POST"])
-def change_song(name=None, song_id=None):
+@app.route("/rooms/<name>/admin/next/<song_id>", methods=["POST"])
+def next_song(name=None, song_id=None):
     session = Session()
     id = request.form.get("id")
-    print(request.form)
-    print(request)
     room = session.query(Room).filter(Room.name == name)[0]
     try:
-        print("song id: {}\n".format(id))
         song = next(s for s in session.query(Song).filter(Song.id > id))
-        print("SONG:\n")
-        print(song)
-        print("\n")
-        print("\n\nNext song id: {}\n\n".format(song.id))
+        room.current_song_id = song.id
+        session.commit()
+        return jsonify(response=song.song_id)
+    except StopIteration as e:
+        # There was no next song
+        return jsonify(response=str(e))
+
+
+@app.route("/rooms/<name>/admin/prev/<song_id>", methods=["POST"])
+def prev_song(name=None, song_id=None):
+    session = Session()
+    id = request.form.get("id")
+    room = session.query(Room).filter(Room.name == name)[0]
+    try:
+        song = next(s for s in session.query(Song).filter(Song.id < id).order_by(Song.id.desc()))
         room.current_song_id = song.id
         session.commit()
         return jsonify(response=song.song_id)

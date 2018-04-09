@@ -32,8 +32,8 @@
         function onYouTubePlayerAPIReady() {
             const id = getActiveButton().attr("song_id");
             player = new YT.Player('player', {
-                width: '640',
-                height: '390',
+                width: '0',
+                height: '0',
                 videoId: id,
                 autoPlay: true,
                 events: {
@@ -61,7 +61,7 @@
             */
             if(event.data === 0){
                 //.remove-button
-                const elem = $(".list-group-item-custom > .active ~ .remove-button").first();
+                const elem = getActiveButton();
                 console.log("NONIIN");
                 console.log(elem);
                 const id = elem.attr("db_id");
@@ -95,9 +95,11 @@
                     const maxDuration = parseInt(bar.attr("aria-valuemax"));
                     bar.css("width", (currentDuration/maxDuration)*100+"%");
                 }, 100);
+                console.debug("intervals initiated");
             } else if(event.data === 2) {
                 clearInterval(interval_time);
                 clearInterval(interval_bar);
+                console.debug("interval cleared");
             }
         }
     </script>

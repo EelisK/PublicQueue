@@ -12,7 +12,7 @@ function deleteSongById(dbId, songId) {
 
 
 function playNextSong(dbId, songId) {
-    const url = window.location.pathname + "/play/" + songId;
+    const url = window.location.pathname + "/next/" + songId;
 
     $.ajax({
         type: "POST",
@@ -23,18 +23,16 @@ function playNextSong(dbId, songId) {
         dataType: "application/json"
     }).always(
         function (res) {
-            console.log(res);
             const response = JSON.parse(res.responseText);
-            console.log(response);
-            updateRelevantElements();
             player.loadVideoById(response.response);
             player.playVideo();
+            updateRelevantElements();
         }
     );
 }
 
-function playSongById(dbId, songId) {
-    const url = window.location.pathname + "/play/" + songId;
+function playPreviousSong(dbId, songId) {
+    const url = window.location.pathname + "/prev/" + songId;
 
     $.ajax({
         type: "POST",
@@ -45,12 +43,10 @@ function playSongById(dbId, songId) {
         dataType: "application/json"
     }).always(
         function (res) {
-            console.log(res);
             const response = JSON.parse(res.responseText);
-            console.log(response);
-            updateRelevantElements();
             player.loadVideoById(response.response);
             player.playVideo();
+            updateRelevantElements();
         }
     );
 }
@@ -62,23 +58,24 @@ function getActiveButton() {
 
 
 function updateRelevantElements() {
-    setBgAndThumbnail();
-    $("#song-list-container").load(location.href + " #song-list");
+    $("#song-list-container").load(location.href + " #song-list", function() {
+        setBgAndThumbnail();
+    });
 }
 
 
 function setBgAndThumbnail() {
     try {
         /**Set background color of body based on the first thumbnails color*/
-        const src = "/static/images/" + $("#song-duration-progress-bar").attr("song-id") + ".jpg";
+        const id = getActiveButton().attr("song_id");
+        const src = "/static/images/" + id + ".jpg";
         let image = new Image;
         image.src = src;
-        console.log(image);
-        console.log(src);
         const colorThief = new ColorThief();
         image.onload = function () {
             const dominantColor = colorThief.getColor(image);
-            const bg = "linear-gradient(180deg,rgb("+dominantColor[0]+","+dominantColor[1]+","+dominantColor[2]+"), var(--dark) 40%)";
+            const rgb = "rgb("+dominantColor[0]+","+dominantColor[1]+","+dominantColor[2]+")";
+            const bg = "linear-gradient("+rgb+","+rgb+", var(--dark) 100%)";
             $("body").css("background", bg);
             const thumbnail = $("#list-thumbnail");
             thumbnail.html($(image));
@@ -112,13 +109,9 @@ $(document).ready(function() {
         const id = $(this).attr("db_id");
         const songId = $(this).attr("song_id");
         const elems = $(".remove-button");
-        /*TODO*/
-        if(this === elems.first().get(0)) {
-            console.log("First removed");
+        if(id === elems.first().attr("db_id")) {
             let second = elems.children().prevObject[1];
-            console.log(second);
             const secondSongId = second.attr("song_id");
-            console.log(secondSongId);
             player.loadVideoById(secondSongId);
             player.playVideo();
         }
@@ -131,10 +124,14 @@ $(document).ready(function() {
 
     $("#previous-button").on("click", function (e) {
         e.preventDefault();
-        const previousBtn = getActiveButton().prev();
-        const id = previousBtn.attr("bd_id");
+        const previousBtn = getActiveButton();
+        const id = previousBtn.attr("db_id");
         const songId = previousBtn.attr("song_id");
-        //playSongById(id, songId);
+        const play = $("#play-pause-button");
+        if(play.html() === "play") {
+            play.click();
+        }
+        playPreviousSong(id, songId);
     });
 
     $("#play-button").on("click", function(e) {
@@ -163,26 +160,19 @@ $(document).ready(function() {
     $("#skip-button").on("click", function(evt) {
         evt.preventDefault();
         const btn = getActiveButton();
-        console.log(btn);
         const id = btn.attr("db_id");
         const songId = btn.attr("song_id");
-        /*btn.parent().remove();
-        deleteSongById(id, songId).always(
-            function (res) {
-                const response = JSON.parse(res.responseText);
-                console.log(response);
-                player.loadVideoById(response.response);
-                player.playVideo();
-            }
-        );*/
+        const play = $("#play-pause-button");
+        if(play.html() === "play") {
+            play.click();
+        }
         playNextSong(id, songId);
-
     });
 
     /*Refresh list every 5 seconds*/
     setInterval(function() {
         $("#song-list-container").load(location.href + " #song-list");
-    }, 5000);
+    }, 50000);
 
     let no_songs = $(".remove-button").length === 0;
 
@@ -197,8 +187,5 @@ $(document).ready(function() {
             no_songs = true;
         }
     }, 5010);
-
-    setInterval(function() {
-    }, 1000);
 
 });
