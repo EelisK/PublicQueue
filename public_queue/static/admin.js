@@ -122,6 +122,7 @@ $(document).ready(function() {
         setTimeout(() => $(this).parent().remove(), dT);
     });
 
+
     $("#previous-button").on("click", function (e) {
         e.preventDefault();
         const previousBtn = getActiveButton();
