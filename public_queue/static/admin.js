@@ -68,7 +68,7 @@ function setBgAndThumbnail() {
     try {
         /**Set background color of body based on the first thumbnails color*/
         const id = getActiveButton().attr("song_id");
-        const src = "/static/images/" + id + ".jpg";
+        const src = "/static/images/thumbnails/" + id + ".jpg";
         let image = new Image;
         image.src = src;
         const colorThief = new ColorThief();
@@ -104,12 +104,12 @@ $(document).ready(function() {
     });
 
     /*Use this notation because of container refreshing*/
-    $(document).on("click", ".remove-button", function (evt) {
+    $(".remove-button").on("click", function (evt) {
         evt.preventDefault();
         const id = $(this).attr("db_id");
         const songId = $(this).attr("song_id");
         const elems = $(".remove-button");
-        if(id === elems.first().attr("db_id")) {
+        if(id === this.first().attr("db_id")) {
             let second = elems.children().prevObject[1];
             const secondSongId = second.attr("song_id");
             player.loadVideoById(secondSongId);
@@ -171,11 +171,11 @@ $(document).ready(function() {
     });
 
     /*Refresh list every 5 seconds*/
-    setInterval(function() {
+    /*setInterval(function() {
         $("#song-list-container").load(location.href + " #song-list");
-    }, 50000);
+    }, 5000);*/
 
-    let no_songs = $(".remove-button").length === 0;
+    let no_songs = true;
 
     setInterval(function() {
         const elem = getActiveButton();

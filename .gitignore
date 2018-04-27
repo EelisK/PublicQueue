@@ -3,5 +3,4 @@
 __pycache__/
 venv/
 secret_keys.py
-public_queue/static/images/*
-!images/logo.png
+public_queue/static/images/thumbnails/

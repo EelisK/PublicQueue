@@ -71,7 +71,7 @@ $(document).ready(function() {
                 console.log(item);
                 const videoId = item["id"]["videoId"];
                 const url = "https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id="+
-                    videoId+"&key=AIzaSyDkkNJHGrVQo6D95PeAfhLrf0lTqGKWmIE";
+                    videoId+"&key=AIzaSyD5ve0bKKcAQSnAk_1ArJ_zSWB9VIJdKqs"//AIzaSyD5ve0bKKcAQSnAk_1ArJ_zSWB9VIJdKqs"; //AIzaSyDkkNJHGrVQo6D95PeAfhLrf0lTqGKWmIE";
                 /*Get song duration*/
                 $.getJSON(url, function (data) {
                     const duration = data.items[0]["contentDetails"]["duration"];

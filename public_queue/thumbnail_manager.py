@@ -3,7 +3,7 @@ from PIL import Image
 
 
 def download_thumbnail(url, name):
-    image_path = "public_queue/static/images/{}.jpg".format(name)
+    image_path = "public_queue/static/images/thumbnails/{}.jpg".format(name)
     urllib.request.urlretrieve(url, image_path)
     # crop 1/8 from end and start
     image_object = Image.open(image_path)
