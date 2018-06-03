@@ -1,18 +1,138 @@
+@import "https://fonts.google.com/specimen/Montserrat";
+
 :root {
-    --green: #00ED5D;
-    --black: #181413;
+    --green: #1DB850;
+    --black: #222325AA;/*remove AA if necessary*/
+    --dark: #111312;
     --blue: #5d00ed;
     --red: #ed5d00;
+    --white: #FEFEFE;
+    --text-color: #88898B;
+    --li-bg: #282828;
+    --login-bg: #2E2E33;
+    --progress-bg: #424242;
+    --light-grey: #A0A0A0;
+    --max-width: 768px;
 }
 
 body {
     /*background: var(--green);*/
     width: 100%;
     height: 100%;
-    background: rgb(2,0,36);
-    background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(0,237,93,1) 35%, rgba(0,212,255,1) 100%);
-    color: var(--green); /*text color*/
-    font-family: 'Open Sans', sans-serif;
+    /*background: var(--dark);*/
+    background: linear-gradient(180deg,rgb(29,184,80), var(--dark) 40%);
+    /*radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(0,237,93,1) 35%, rgba(0,212,255,1) 100%);*/
+    color: var(--text-color); /*text color*/
+    font-family: 'Montserrat SemiBold', 'Open Sans', sans-serif;
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 350ms;
+}
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+    perspective: 1500px;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: var(--black);
+    color: var(--white);
+    transition: all 0.3s;
+    height: calc(100vh - 55px);
+    position: static;
+    display: inline-block;
+    left: 0;
+    z-index: 9999;
+}
+
+#sidebar .fa {
+    color: var(--green);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    /*background: var(--black);*/
+    border-bottom: 1px solid grey;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #1d2124;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: var(--white);
+    background: var(--dark);
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    background: var(--li-bg);
+}
+/* Shrinking the sidebar from 250px to 80px and center aligining its content*/
+#sidebar.active {
+    min-width: 80px;
+    max-width: 80px;
+    text-align: center;
+    top: 55px;
+    position: absolute;
+}
+
+#sidebar .sidebar-header strong {
+    display: none;
+}
+#sidebar.active .sidebar-header h3 {
+    display: none;
+}
+#sidebar.active .sidebar-header strong {
+    display: block;
+}
+
+#sidebar ul li a {
+    text-align: left;
+}
+
+#sidebar.active ul li a {
+    padding: 20px 10px;
+    text-align: center;
+    font-size: 0.85em;
+}
+
+#sidebar.active ul li a i {
+    margin-right:  0;
+    display: block;
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+
+#sidebar.active ul ul a {
+    padding: 10px !important;
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: var(--li-bg);
+}
+
+.wrapper {
+    display: block;
 }
 
 @keyframes contenthover {
@@ -25,27 +145,21 @@ body {
     to {box-shadow: 0 0 0 #000;}
 }
 
-.content {
-    margin-top: 30px;
-    width: 70%;
-    height: 100%;
-    min-height: 600px;
-    text-align: center;
-    background-color: var(--black);
-    top: 2.5%;
-    left: 15%;
-    box-shadow: 0 0 0 #000;
-    opacity: 1;
-    animation-name: contentnothover;
-    animation-duration: 0.4s;
+#content {
+    padding: 20px;
+    height: calc(100vh - 55px);
+    transition: all 0.3s;
+    display: inline-block;
+    float: right;
+    position: relative;
 }
 
-.content:hover {
-    background-color: var(--black);
-    animation-name: contenthover;
-    animation-duration: 0.4s;
-    opacity: 1;
-    box-shadow: 0 0 30px #000;
+#sidebar.active ~ #content {
+    width: calc(100% - 80px);
+}
+
+#sidebar:not(.active) ~ #content {
+    width: calc(100% - 250px);
 }
 
 .fixed-top {
@@ -57,16 +171,97 @@ body {
 
 .navbar-custom {
     background: var(--black);
+    min-height: 55px;
+    max-height: 55px;
 }
 
 .navbar-brand {
     color: var(--green);
 }
 
-@media (max-width: 800px) {
-    .content {
+.room-name {
+    /*Add some fancy title effects*/
+    color: var(--white);
+}
+
+.spam-control {
+    word-break: break-all;
+    font-size: 0.7em;
+}
+
+#cookie-bar {
+    color: var(--white);
+    font-weight: normal;
+}
+
+#öl-logo-1 {
+    max-width: 40px;
+    max-height: 40px;
+}
+
+.room-title {
+    font-size: 0.6em;
+    color: var(--green);
+}
+
+@media (max-width: 768px) {
+
+    #sidebar.active {
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+        margin-left: -80px !important;
+    }
+
+    #sidebar {
+        margin-left: 0;
+    }
+
+    #sidebar.active ~ #content {
         width: 100%;
-        height: 100%;
-        margin: 1px 0 0 0;
+    }
+
+    #sidebar:not(.active) ~ #content {
+        width: calc(100% - 250px);
+    }
+
+
+    #sidebar .sidebar-header strong {
+        display: none;
+    }
+    #sidebar.active .sidebar-header h3 {
+        display: none;
+    }
+    #sidebar.active .sidebar-header strong {
+        display: block;
+    }
+
+
+    #sidebar.active ul li a {
+        padding: 20px 10px;
+        font-size: 0.85em;
+    }
+
+    #sidebar.active ul li a i {
+        margin-right:  0;
+        display: block;
+        font-size: 1.8em;
+        margin-bottom: 5px;
+    }
+
+    #sidebar.active ul ul a {
+        padding: 10px !important;
+    }
+
+
+}
+
+/*Display #content on an iPad
+ *when sidebar has been extended*/
+@media (max-width: 767px) {
+    #sidebar:not(.active) ~ #content {
+        display: none;
     }
 }
+
+

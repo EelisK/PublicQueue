@@ -34,6 +34,7 @@ class Room(Base):
 
     name = Column(String, primary_key=True)
     password = Column(String)
+    current_song_id = Column(Integer)  # Index that tells which song is currently playing
     queue = relationship("Song", back_populates="room", cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -50,6 +51,9 @@ class Song(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     song_id = Column(String)
     name = Column(String)
+    thumbnail = Column(String)
+    duration = Column(Integer)
+
     added = Column(DateTime(timezone=True), default=func.now())
     room = relationship("Room", back_populates="queue")
     room_name = Column(String, ForeignKey("rooms.name"))

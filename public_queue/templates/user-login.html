@@ -7,7 +7,14 @@
 {% block content %}
 
 <div class="row login">
-    <div class="col-md-6 col-md-offset-3" style="border-radius: 10px;">
+    <div class="col-md-6 col-md-offset-3 login-container">
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" id="öl-logo" alt="Ølify">
+            <h1 class="display-3 logo-title">Ølify</h1>
+            {% if error %}
+                <div class="alert alert-warning bg-transparent">{{ error }}</div>
+            {% endif %}
+        </div>
         <div class="panel panel-login">
             <div class="panel-heading">
                 <div class="row login">
@@ -69,5 +76,6 @@
 
         </div>
     </div>
+</div>
 
 {% endblock %}

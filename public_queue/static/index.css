@@ -1,36 +1,36 @@
-.navigation-item {
-    background: #00ED5D;
-    border-radius: 10px;
-    margin: 3px;
+#infoCarousel {
+    height: 400px;
 }
 
-.row {
-    text-align: center;
+.carousel-inner {
+    height: 100%;
 }
 
-.navigation-item a {
-    color: #181413;
-    text-decoration: none;
+.carousel-item {
+    height: 100%;
 }
 
-.navigation-item a :hover {
-    text-decoration: none;
+.carousel-caption {
+    bottom: 130px;
 }
 
-a, a:hover, a:visited, a:link, a:active
-{
-    text-decoration: none;
+.carousel-caption {
+    bottom: 80px;
 }
 
-.card-img {
-    max-height: 300px;
+.fa.fa-circle.active {
+    color: var(--green);
+    background: var(--green);
 }
 
-.card {
-    margin: auto auto;
-    max-width: 50%;
+.fa.fa-circle {
+    margin: 0 10px;
+    border: 1px solid #c6c8ca;
+    border-radius: 100%;
+    color: var(--black);
 }
 
-.card-img-overlay {
-    margin-top: 34%;
+div.carousel-caption {
+    bottom: 140px;
 }
+

@@ -2,27 +2,66 @@
 {% block title %}index{% endblock %}
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 {% endblock %}
 {% block content %}
-    <h1>Welcome {{ user.name }}</h1>
-        <div class="row view">
-            <a class="card bg-dark text-white" href="/rooms">
-                <img class="card-img" src="https://images.pexels.com/photos/34407/pexels-photo.jpg" alt="Card image">
-                <div class="card-img-overlay">
-                    <h3 class="card-title">Room login</h3>
-                    <!--<p class="card-text">Select a room and log in to it.</p>-->
+
+    <!-- Why does this not work from index.css -->
+    <style>
+    .carousel-caption {
+        bottom: 80px;
+    }
+    @media (max-width: 768px) {
+        .carousel-caption {
+            bottom: 100px;
+        }
+        #infoCarousel {
+            height: 400px;
+        }
+        #content {
+            height: 400px;
+        }
+    }
+    </style>
+
+    <div id="infoCarousel" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <span data-target="#infoCarousel" data-slide-to="0" class="fa fa-circle active"></span>
+            <span data-target="#infoCarousel" data-slide-to="1" class="fa fa-circle"></span>
+            <span data-target="#infoCarousel" data-slide-to="2" class="fa fa-circle"></span>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="carousel-caption">
+                    <h2>Create Rooms and Share Them With Your Friends!</h2>
+                    <p>Log in  or create a room and add songs to it. The party has never been more more lit
+                        (fellow kids)
+                        <i class="fa fa-fire"></i></p>
                 </div>
-            </a>
-            <a class="card bg-dark text-white" href="/room-creation">
-                <img class="card-img" src="https://images.pexels.com/photos/97077/pexels-photo-97077.jpeg" alt="Card image">
-                <div class="card-img-overlay">
-                    <h3 class="card-title">Create a room</h3>
-                    <!--<p class="card-text">Click here to create a room.</p>-->
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-caption">
+                    <h2>App uses YouTube player API.</h2>
+                    <h5>...and other technologies</h5>
+                    <i class="fa fa-flask fa-3x"></i>
+                    <i class="fa fa-python fa-3x"></i>
+                    <i class="fa fa-database fa-3x"></i>
+                    <br/>
+                    <i class="fa fa-css3 fa-3x"></i>
+                    <i class="fa fa-html5 fa-3x"></i>
                 </div>
-            </a>
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-caption">
+                    <h2>Get started!</h2>
+                    <p>Log in or create a room now!</p>
+                </div>
+            </div>
         </div>
-        {% if error %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endif %}
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
 {% endblock %}
 

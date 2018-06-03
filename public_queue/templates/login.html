@@ -1,30 +1,84 @@
 {% extends 'base.html' %}
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='user-login.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='user-login.js') }}"></script>
 {% endblock %}
 {% block title %}login{% endblock %}
 {% block content %}
-    <img src="https://d30y9cdsu7xlg0.cloudfront.net/png/1327-200.png" class="img-outline">
-    <div class="col align-self-center">
-        <form action="/rooms" method="POST" id="login-form" 
-            class="col col-sm-3 align-selc-center" style="margin-left: auto; margin-right: auto;">
-            <div class="form-group">
-                <label for="sel1"><i class="fa fa-music"></i> room</label>
-                <select class="form-control" id="sel1" name="name">
-                    {% for room in rooms %}
-                        <option value="{{ room.name }}">{{ room.name }}</option>
-                    {% endfor %}
-                </select>
+
+<div class="row login">
+    <div class="col-md-6 col-md-offset-3 login-container">
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" id="öl-logo" alt="Ølify">
+            <h1 class="display-3 logo-title">Ølify</h1>
+            {% if error %}
+                <div class="alert alert-warning bg-transparent">{{ error }}</div>
+            {% endif %}
+        </div>
+        <div class="panel panel-login">
+            <div class="panel-heading">
+                <div class="row login">
+                    <div class="col-xs-6">
+                        <a href="#" class="active" id="login-form-link">Login</a>
+                    </div>
+                    <div class="col-xs-6">
+                        <a href="#" id="register-form-link">Create</a>
+                    </div>
+                </div>
+                <hr>
             </div>
-            <div class="form-group">
-                <label for="pwd1"><i class="fa fa-user-secret"></i> password</label>
-                <input type="password" name="password" id="pwd1" class="form-control" placeholder="password">
-                <br/>
-                <input type="submit" value="login" class="btn btn-login btn-outline-success">
+            <div class="panel-body">
+                <div class="row login">
+                    <div class="col-lg-12">
+
+                        <form id="login-form" action="/rooms" method="POST" role="form" style="display: block;">
+                            <div class="form-group">
+                                <select class="form-control custom-select" name="room-name">
+                                    {% for room in rooms %}
+                                        <option value="{{ room.name }}">{{ room.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="password" id="password"  class="form-control" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <div class="row login">
+                                    <div class="col-sm-6 col-sm-offset-3" style="margin-left: auto; margin-right: auto;">
+                                        <input type="submit" name="login-submit" id="login-submit"
+                                               tabindex="4" class="form-control btn btn-success" value="Log In">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <form id="register-form" action="/room-creation" method="post" role="form" style="display: none;">
+                            <div class="form-group">
+                                <input type="text" name="room-name" class="form-control" placeholder="Room name" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="password" class="form-control" placeholder="Password">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="confirm-password"
+                                       class="form-control" placeholder="Confirm Password">
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6 col-sm-offset-3" style="margin-left: auto; margin-right: auto;">
+                                        <input type="submit" name="register-submit" id="register-submit" tabindex="4"
+                                               class="form-control btn btn-register" value="Create Now">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
             </div>
-        </form>
-        {% if error %}
-            <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endif %}
+
+        </div>
     </div>
+</div>
+
 {% endblock %}
